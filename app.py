@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException, Body, Form
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 from pydantic import BaseModel
@@ -9,7 +9,6 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 # --- IN-MEMORY REPOSITORY STORAGE DEFAULTS ---
-# Simulating a live database state for advanced structural components
 STUDENT_ROSTER = [
     {"id": 1, "name": "Alex Mercer", "grade": 88, "engagement": 92, "attendance": 95, "cluster": "High Achievers"},
     {"id": 2, "name": "Baird Cooper", "grade": 54, "engagement": 41, "attendance": 72, "cluster": "Critical Attention"},
@@ -38,7 +37,7 @@ class VoicePayload(BaseModel):
 
 @app.get("/")
 async def read_root(request: Request):
-    return templates.TemplateResponse(request, "index.html")
+    return templates.TemplateResponse(request, "index.html", {"streak": 14})
 
 # --- LEARNING ANALYTICS & CLUSTERING DATA ENGINE ---
 @app.get("/api/analytics/summary")
@@ -49,7 +48,6 @@ async def get_analytics_summary():
     avg_grade = sum(s["grade"] for s in STUDENT_ROSTER) / len(STUDENT_ROSTER)
     avg_engage = sum(s["engagement"] for s in STUDENT_ROSTER) / len(STUDENT_ROSTER)
     
-    # Simple algorithmic distribution counting for Cluster groupings
     cluster_counts = {}
     for s in STUDENT_ROSTER:
         cluster_counts[s["cluster"]] = cluster_counts.get(s["cluster"], 0) + 1
@@ -66,17 +64,15 @@ async def get_analytics_summary():
 @app.post("/api/automation/voice-grade")
 async def parse_voice_grade(payload: VoicePayload):
     text = payload.transcript.lower()
-    # Mock Natural Language processing extract values: "Set grade for Alex Mercer to 95 on Database Management Assignment #2"
     detected_student = None
     detected_grade = None
-    detected_task = "Database Management Assignment #2" # Default matched scope fallback
+    detected_task = "Database Management Assignment #2"
     
     for s in STUDENT_ROSTER:
         if s["name"].lower() in text:
             detected_student = s["name"]
             break
             
-    # Simple text token parsing extraction routine for finding numerical patterns
     words = text.split()
     for word in words:
         if word.isdigit():
@@ -90,7 +86,6 @@ async def parse_voice_grade(payload: VoicePayload):
             GRADEBOOK[detected_task] = {}
         GRADEBOOK[detected_task][detected_student] = detected_grade
         
-        # Real-time state synchronization check: adjust student profile grade records dynamically based on incoming logs
         for s in STUDENT_ROSTER:
             if s["name"] == detected_student:
                 s["grade"] = round((s["grade"] + detected_grade) / 2) 
@@ -113,7 +108,6 @@ async def trigger_automation(auto_id: str):
         if auto["id"] == auto_id:
             auto["status"] = "Running..."
             auto["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M")
-            # In a production app, background workers execute here. We mimic immediate termination loop state.
             auto["status"] = "Active" if auto_id == "auto_02" else "Idle"
             return {"success": True, "target": auto}
     raise HTTPException(status_code=404, detail="Target tracking engine ID not found.")
@@ -133,3 +127,62 @@ async def create_ticket(student: str = Body(..., embed=True), issue: str = Body(
     }
     SUPPORT_TICKETS.insert(0, new_ticket)
     return {"success": True, "ticket": new_ticket}
+
+# --- PDF STRUCTURE MOCK ROUTINE FOR FALLBACK MATCHING ---
+@app.post("/api/upload-pdf")
+async def upload_pdf(file: bytes = Body(...)):
+    return {
+        "filename": "Uploaded_Syllabus_Analysis.pdf",
+        "url": "https://storage.local/files/uploaded_syllabus_analysis.pdf",
+        "uploaded_at": datetime.now().strftime("%Y-%m-%d")
+    }
+
+# --- AUTOMATED AI CONTEXT GENERATORS ---
+@app.post("/api/generate-quiz")
+async def generate_quiz_endpoint(filename: str = Form(...)):
+    return {
+        "quiz_title": f"Assessment Metrics: {filename}",
+        "questions": [
+            {"id": 1, "question": "What primary abstraction mechanism defines the resource layout core parameters?", "options": ["Linear Arrays", "Relational Mapping Engine", "Graph Network Vertices", "State Buffers"], "answer": 1},
+            {"id": 2, "question": "Which protocol layer manages real-time caching verification metrics?", "options": ["HTTP Session Tokens", "Local Storage Handlers", "Synchronous API Callbacks", "Asynchronous Event Listeners"], "answer": 1}
+        ]
+    }
+
+@app.post("/api/generate-roadmap")
+async def generate_roadmap_endpoint(topic: str = Form(...)):
+    return {
+        "topic": topic,
+        "steps": [
+            {"phase": "Phase 1: Fundamental Grounding Core", "desc": f"Acquire core baseline schemas governing structural properties of {topic}."},
+            {"phase": "Phase 2: Intermediate Architectural Design", "desc": "Design and assemble microservice entities to run localized optimization checks."},
+            {"phase": "Phase 3: Automated Deployment Framework", "desc": "Ship modular dependencies safely using adaptive monitoring controls."}
+        ]
+    }
+
+# --- CAREER RECOMMENDATIONS & RESUME METRICS ROUTINE ---
+@app.get("/api/career/recommendations")
+async def get_career_recommendations():
+    return {
+        "resume_summary": {
+            "detected_track": "Data Science & Distributed API Systems Engineering",
+            "optimization_score": "84% (High Alignment Vector)"
+        },
+        "career_recommendations": [
+            {
+                "role": "AI Solutions & Backend Core Engineer",
+                "match_score": "91%",
+                "action_items": [
+                    "Integrate structured async processing frameworks inside existing FastAPI architectures.",
+                    "Extend database optimization layers for low-latency matrix generation pipelines."
+                ]
+            },
+            {
+                "role": "Data Systems Architect",
+                "match_score": "78%",
+                "action_items": [
+                    "Incorporate vector optimization indexing structures to scale unstructured analytics.",
+                    "Complete production staging configurations for advanced automated workflow sequences."
+                ]
+            }
+        ]
+    }
