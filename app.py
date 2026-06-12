@@ -1,197 +1,135 @@
-from fastapi import FastAPI, HTTPException, Body, UploadFile, File
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 from pydantic import BaseModel
-from datetime import datetime, date
+from datetime import datetime
 import random
-import hashlib
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-# ==============================================================================
-#                      GLOBAL CENTRALIZED DATABASE MATRIX STATE
-# ==============================================================================
-# --- USER IDENTITIES & PROGRESS PROGRESSION ---
-GLOBAL_USERS = {
-    "st_01": {"id": "st_01", "name": "Alex Mercer", "role": "student", "xp": 2450, "level": 4, "streak": 12, "badges": ["Fast Learner", "Ledger Verified"]},
-    "st_02": {"id": "st_02", "name": "Baird Cooper", "role": "student", "xp": 420, "level": 1, "streak": 0, "badges": ["First Milestone"]},
-    "st_03": {"id": "st_03", "name": "Chloe Frazer", "role": "student", "xp": 1890, "level": 3, "streak": 5, "badges": ["Code Warrior"]}
-}
-
-STUDENT_ROSTER_ANALYTICS = [
-    {"id": "st_01", "name": "Alex Mercer", "grade": 88, "engagement": 92, "attendance": 95, "cluster": "High Achievers", "weak_topics": ["Quantum Transforms"]},
-    {"id": "st_02", "name": "Baird Cooper", "grade": 54, "engagement": 41, "attendance": 72, "cluster": "Critical Attention", "weak_topics": ["Relational Joins", "Normalization"]},
-    {"id": "st_03", "name": "Chloe Frazer", "grade": 76, "engagement": 89, "attendance": 88, "cluster": "Under-engaged Peers", "weak_topics": ["Tree Traversal"]}
-]
-
-# --- CURRICULUM, KNOWLEDGE BASE & UPLOADS ---
-GLOBAL_COURSES = [
-    {"id": "cs_101", "title": "Advanced Database Infrastructures", "modules": 4, "students_enrolled": 18},
-    {"id": "cs_102", "title": "Algorithmic Paradigms & Data Models", "modules": 5, "students_enrolled": 14}
-]
-
-NOTES_REPOSITORY = [
-    {"id": "nt_01", "title": "Database Normalization Principles", "content": "1NF, 2NF, 3NF and BCNF rules overview...", "summary": "Structured breakdown of data optimization rules.", "course_id": "cs_101"}
-]
-
-UPLOADED_DOCUMENTS = [
-    {"id": "pdf_01", "filename": "distributed_systems_syllabus.pdf", "extracted_tokens": 14200}
-]
-
-# --- ADAPTIVE EVALUATIONS & TASKS ---
-GENERATED_QUIZZES = [
-    {"id": "qz_01", "source": "nt_01", "title": "Normalization Speed Drill", "questions": [
-        {"q": "What anomaly does 2NF primarily resolve?", "options": ["Partial Dependencies", "Transitive Dependencies", "Join Anomaly"], "answer": "Partial Dependencies"}
-    ]}
-]
-
-STUDY_PLANS = [
-    {"student_id": "st_01", "task": "Review Relational Algebra", "scheduled_time": "2026-06-15", "status": "Pending"}
-]
-
-SUPPORT_TICKETS = [
-    {"id": "tk_101", "student": "Baird Cooper", "issue": "Stuck on DB Assignment 2 setup pipeline", "status": "Resolved"}
+# --- IN-MEMORY REPOSITORY STORAGE DEFAULTS ---
+# Simulating a live database state for advanced structural components
+STUDENT_ROSTER = [
+    {"id": 1, "name": "Alex Mercer", "grade": 88, "engagement": 92, "attendance": 95, "cluster": "High Achievers"},
+    {"id": 2, "name": "Baird Cooper", "grade": 54, "engagement": 41, "attendance": 72, "cluster": "Critical Attention"},
+    {"id": 3, "name": "Chloe Frazer", "grade": 76, "engagement": 89, "attendance": 88, "cluster": "Under-engaged Peers"},
+    {"id": 4, "name": "Diana Burnwood", "grade": 91, "engagement": 62, "attendance": 90, "cluster": "Under-engaged Peers"},
+    {"id": 5, "name": "Ethan Hunt", "grade": 42, "engagement": 30, "attendance": 55, "cluster": "Critical Attention"},
 ]
 
 ADMIN_AUTOMATIONS = [
-    {"id": "auto_01", "title": "Generate Weekly Attendance Reports", "status": "Idle", "last_run": "2026-06-10 09:00"}
+    {"id": "auto_01", "title": "Generate Weekly Attendance Reports", "status": "Idle", "last_run": "2026-06-10 09:00"},
+    {"id": "auto_02", "title": "Sync Classroom Portal Submissions", "status": "Active", "last_run": "2026-06-12 11:30"},
+    {"id": "auto_03", "title": "Flag Low-Engagement Risk Triggers", "status": "Idle", "last_run": "2026-06-11 17:15"}
 ]
 
-VERIFIED_SKILLS_LEDGER = [
-    {"id": "sk_01", "student": "Alex Mercer", "skill": "FastAPI Core", "status": "Verified", "hash": "0x8f2c...4a91", "date": "2026-05-14"}
+SUPPORT_TICKETS = [
+    {"id": "tk_101", "student": "Baird Cooper", "issue": "Stuck on DB Assignment 2 setup pipeline", "status": "Resolved"},
+    {"id": "tk_102", "student": "Ethan Hunt", "issue": "Missing access keys for the virtual test environment", "status": "Pending"}
 ]
 
-RECRUITMENT_PARTNERS = [
-    {"platform": "Greenhouse ATS", "status": "Connected", "last_sync": "2026-06-12 10:15"}
-]
+GRADEBOOK = {
+    "Database Management Assignment #2": {"Alex Mercer": 92, "Baird Cooper": 45, "Chloe Frazer": 80}
+}
 
-# ==============================================================================
-#                               PYDANTIC SCHEMAS
-# ==============================================================================
-class VoicePayload(BaseModel): transcript: str
-class AskAIQuery(BaseModel): prompt: str; context_source: str = "curriculum"
-class NoteCreate(BaseModel): title: str; content: str; course_id: str
+class VoicePayload(BaseModel):
+    transcript: str
 
-# ==============================================================================
-#                            CORE ROUTING ENDPOINTS
-# ==============================================================================
 @app.get("/")
 async def read_root(request: Request):
     return templates.TemplateResponse(request, "index.html")
 
-# --- AI CORE ENGINE & CURRICULUM GROUNDING ---
-@app.post("/api/ai/ask")
-async def ask_ai_tutor(query: AskAIQuery):
-    """Grounds query parameters against virtual indices to provide accurate responses."""
-    text = query.prompt.lower()
-    if "normalization" in text or "database" in text:
-        reply = "AI Grounded Response: Database normalization ensures minimal redundancy. 1NF mandates atomic values, 2NF eliminates partial dependencies, and 3NF blocks transitive dependencies."
-    elif "quantum" in text:
-        reply = "AI Grounded Response: Quantum Transforms map input vectors using localized unitary transition operators to process complex arrays."
-    else:
-        reply = f"AI Grounded Response: Analyzed curriculum sequence context. Found matching modules inside standard system data topologies for phrase: '{query.prompt}'"
-    return {"reply": reply, "timestamp": datetime.now().isoformat()}
-
-@app.post("/api/ai/summarize-note")
-async def summarize_note(note_id: str = Body(..., embed=True)):
-    for note in NOTES_REPOSITORY:
-        if note["id"] == note_id:
-            note["summary"] = f"AI Summary Engine: Processed content block at {datetime.now().strftime('%M:%S')}. Core takeaway focuses on structure optimization rules."
-            return {"success": True, "note": note}
-    raise HTTPException(status_code=404, detail="Target document slice missing.")
-
-@app.post("/api/ai/generate-quiz")
-async def generate_quiz_from_source(source_id: str = Body(..., embed=True), title: str = Body(..., embed=True)):
-    """Simulates NLP semantic feature grouping to auto-generate adaptive testing frameworks."""
-    new_quiz = {
-        "id": f"qz_{random.randint(100,999)}",
-        "source": source_id,
-        "title": f"AI Generated: {title}",
-        "questions": [
-            {"q": "Select the correct optimized solution component matching your tracking data profile target.", "options": ["Option Alpha Acceleration", "Option Beta Configuration", "Option Gamma Compression"], "answer": "Option Alpha Acceleration"}
-        ]
-    }
-    GENERATED_QUIZZES.append(new_quiz)
-    return {"success": True, "quiz": new_quiz}
-
-# --- CURRICULUM, NOTE MANAGEMENT & OFFLINE PREP SYNCS ---
-@app.get("/api/education/courses")
-async def list_courses(): return {"courses": GLOBAL_COURSES}
-
-@app.get("/api/education/notes")
-async def list_notes(): return {"notes": NOTES_REPOSITORY}
-
-@app.post("/api/education/notes/create")
-async def create_note(data: NoteCreate):
-    new_note = {
-        "id": f"nt_{random.randint(100,999)}",
-        "title": data.title,
-        "content": data.content,
-        "summary": "Pending conversion run...",
-        "course_id": data.course_id
-    }
-    NOTES_REPOSITORY.append(new_note)
-    return {"success": True, "note": new_note}
-
-@app.post("/api/education/upload-pdf")
-async def upload_pdf(file: UploadFile = File(...)):
-    """Accepts document inputs, generating mock indexing blocks for local parsing."""
-    new_doc = {"id": f"pdf_{random.randint(100,999)}", "filename": file.filename, "extracted_tokens": random.randint(5000, 25000)}
-    UPLOADED_DOCUMENTS.append(new_doc)
-    return {"success": True, "document": new_doc}
-
-@app.get("/api/education/quizzes")
-async def get_quizzes(): return {"quizzes": GENERATED_QUIZZES}
-
-# --- GAMIFICATION ENGINE & LEVEL LEVEL MATH TRACKERS ---
-@app.post("/api/gamification/award-xp")
-async def award_xp(student_id: str = Body(..., embed=True), amount: int = Body(..., embed=True)):
-    if student_id in GLOBAL_USERS:
-        user = GLOBAL_USERS[student_id]
-        user["xp"] += amount
-        # Level thresholds formula calculation model: level = floor(sqrt(xp) / 10) + 1
-        new_lvl = int((user["xp"] ** 0.5) / 12) + 1
-        if new_lvl > user["level"]:
-            user["level"] = new_lvl
-            user["badges"].append(f"Level {new_lvl} Milestone")
-        return {"success": True, "user": user}
-    raise HTTPException(status_code=404, detail="Student profile footprint unmapped.")
-
-# --- TEACHER & ADMIN CONTROL PLANES ---
-@app.get("/api/teacher/analytics")
-async def get_teacher_dashboard_metrics():
-    # Performance-based dynamic student grouping aggregation calculations
-    groups = {"High Tier Achievers": [], "Core Growth Track": [], "Immediate Intervention Needed": []}
-    for s in STUDENT_ROSTER_ANALYTICS:
-        if s["grade"] >= 85: groups["High Tier Achievers"].append(s["name"])
-        elif s["grade"] >= 65: groups["Core Growth Track"].append(s["name"])
-        else: groups["Immediate Intervention Needed"].append(s["name"])
-        
-    return {
-        "roster": STUDENT_ROSTER_ANALYTICS,
-        "groupings": groups,
-        "class_average_grade": round(sum(s["grade"] for s in STUDENT_ROSTER_ANALYTICS)/len(STUDENT_ROSTER_ANALYTICS), 1)
-    }
-
-# --- EXISTING VOICE & SHORTCUT WRAPPERS FOR CONTINUITY ---
+# --- LEARNING ANALYTICS & CLUSTERING DATA ENGINE ---
 @app.get("/api/analytics/summary")
 async def get_analytics_summary():
-    return {"avg_grade": 72.6, "avg_engagement": 74.0, "cohort_size": len(STUDENT_ROSTER_ANALYTICS), "roster": STUDENT_ROSTER_ANALYTICS}
-
-@app.get("/api/career/dashboard")
-async def get_career_overview():
+    if not STUDENT_ROSTER:
+        return {"avg_grade": 0, "avg_engagement": 0, "cohort_size": 0}
+        
+    avg_grade = sum(s["grade"] for s in STUDENT_ROSTER) / len(STUDENT_ROSTER)
+    avg_engage = sum(s["engagement"] for s in STUDENT_ROSTER) / len(STUDENT_ROSTER)
+    
+    # Simple algorithmic distribution counting for Cluster groupings
+    cluster_counts = {}
+    for s in STUDENT_ROSTER:
+        cluster_counts[s["cluster"]] = cluster_counts.get(s["cluster"], 0) + 1
+        
     return {
-        "ledger": VERIFIED_SKILLS_LEDGER,
-        "partners": RECRUITMENT_PARTNERS,
-        "recommendations": [{"skill": "GraphQL Federations", "demand": "High Growth", "reason": "Trending in backend API patterns"}],
-        "growth_metrics": {"total_verifications": len(VERIFIED_SKILLS_LEDGER), "verified_proofs": 1, "growth_velocity": "+14.2% Ingestion Velocity"}
+        "avg_grade": round(avg_grade, 1),
+        "avg_engagement": round(avg_engage, 1),
+        "cohort_size": len(STUDENT_ROSTER),
+        "clusters": cluster_counts,
+        "roster": STUDENT_ROSTER
     }
 
-@app.post("/api/career/skills/verify")
-async def create_skill_verification(student: str = Body(..., embed=True), skill: str = Body(..., embed=True)):
-    raw_token = f"{student}-{skill}"
-    crypto_hash = f"0x{hashlib.sha256(raw_token.encode()).hexdigest()[:8]}...ffff"
-    new_p = {"id": "sk_new", "student": student, "skill": skill, "status": "Verified", "hash": crypto_hash, "date": "2026-06-12"}
-    VERIFIED_SKILLS_LEDGER.insert(0, new_p)
-    return {"success": True, "proof": new_p}
+# --- VOICE-TO-GRADEBOOK UTILITY ---
+@app.post("/api/automation/voice-grade")
+async def parse_voice_grade(payload: VoicePayload):
+    text = payload.transcript.lower()
+    # Mock Natural Language processing extract values: "Set grade for Alex Mercer to 95 on Database Management Assignment #2"
+    detected_student = None
+    detected_grade = None
+    detected_task = "Database Management Assignment #2" # Default matched scope fallback
+    
+    for s in STUDENT_ROSTER:
+        if s["name"].lower() in text:
+            detected_student = s["name"]
+            break
+            
+    # Simple text token parsing extraction routine for finding numerical patterns
+    words = text.split()
+    for word in words:
+        if word.isdigit():
+            val = int(word)
+            if 0 <= val <= 100:
+                detected_grade = val
+                break
+
+    if detected_student and detected_grade is not None:
+        if detected_task not in GRADEBOOK:
+            GRADEBOOK[detected_task] = {}
+        GRADEBOOK[detected_task][detected_student] = detected_grade
+        
+        # Real-time state synchronization check: adjust student profile grade records dynamically based on incoming logs
+        for s in STUDENT_ROSTER:
+            if s["name"] == detected_student:
+                s["grade"] = round((s["grade"] + detected_grade) / 2) 
+        
+        return {
+            "success": True, 
+            "message": f"Successfully committed action! Logged {detected_grade}% for student {detected_student} under task '{detected_task}'."
+        }
+    
+    raise HTTPException(status_code=400, detail="Failed to safely map voice command syntax structure. Ensure format matches: 'Set grade for [Student Name] to [0-100]'.")
+
+# --- ADMINISTRATIVE TASK AUTOMATION ENGINE ---
+@app.get("/api/admin/automations")
+async def list_automations():
+    return {"automations": ADMIN_AUTOMATIONS}
+
+@app.post("/api/admin/trigger/{auto_id}")
+async def trigger_automation(auto_id: str):
+    for auto in ADMIN_AUTOMATIONS:
+        if auto["id"] == auto_id:
+            auto["status"] = "Running..."
+            auto["last_run"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+            # In a production app, background workers execute here. We mimic immediate termination loop state.
+            auto["status"] = "Active" if auto_id == "auto_02" else "Idle"
+            return {"success": True, "target": auto}
+    raise HTTPException(status_code=404, detail="Target tracking engine ID not found.")
+
+# --- AUTOMATED SUPPORT SYSTEM DRIVER ---
+@app.get("/api/support/tickets")
+async def get_tickets():
+    return {"tickets": SUPPORT_TICKETS}
+
+@app.post("/api/support/tickets/create")
+async def create_ticket(student: str = Body(..., embed=True), issue: str = Body(..., embed=True)):
+    new_ticket = {
+        "id": f"tk_{random.randint(103, 999)}",
+        "student": student,
+        "issue": issue,
+        "status": "Pending"
+    }
+    SUPPORT_TICKETS.insert(0, new_ticket)
+    return {"success": True, "ticket": new_ticket}

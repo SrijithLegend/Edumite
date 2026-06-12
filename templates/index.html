@@ -3,518 +3,1178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EDUMITE - Multi-Role Enterprise Platform</title>
+    <title>EDUMITE - Advanced Platform</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Base Structural Layout Configurations */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; }
-
-        /* Top Banner Navigation Dashboard Selector Frame */
-        .role-selector-bar {
-            position: fixed; top: 0; left: 280px; right: 0; height: 60px; background: #ffffff;
-            border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 2.5rem; z-index: 900;
+        /* Modern Reset & Base Setup */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+            min-height: 100vh;
+            line-height: 1.5;
+            display: flex; 
         }
 
-        /* Sidebar Navigation Layout Panel */
-        nav { width: 280px; height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; gap: 0.35rem; background: #ffffff; padding: 2rem 1rem; border-right: 1px solid #e2e8f0; box-shadow: 1px 0 3px 0 rgba(0, 0, 0, 0.05); overflow-y: auto; }
-        .sidebar-brand { font-size: 1.1rem; font-weight: 700; color: #0f172a; padding: 0 1rem 1.5rem 1rem; border-bottom: 1px solid #f1f5f9; margin-bottom: 1.5rem; letter-spacing: -0.025em; }
-        .nav-item { color: #64748b; text-decoration: none; font-size: 0.925rem; font-weight: 500; padding: 0.75rem 1rem; border-radius: 6px; transition: all 0.2s ease; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .nav-item:hover, .nav-item.active { color: #2563eb; background-color: #eff6ff; }
-        .nav-badge { background-color: #f1f5f9; color: #475569; font-size: 0.75rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; }
+        /* Fixed Sidebar Styling */
+        nav { 
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex; 
+            flex-direction: column; 
+            background: #ffffff;
+            padding: 2rem 1rem;
+            border-right: 1px solid #e2e8f0;
+            box-shadow: 1px 0 3px 0 rgba(0, 0, 0, 0.05);
+            overflow-y: auto; 
+            z-index: 10;
+        }
 
-        /* View Container Framework */
-        .main-container { flex: 1; margin-left: 280px; margin-top: 60px; padding: 2.5rem; max-width: 1400px; }
-        .role-panel { display: none; }
-        .role-panel.active-panel { display: block; }
+        .sidebar-brand {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            padding: 0 1rem 1.1rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.025em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-        /* General Module Card UI Component Structural Models */
-        .section-block { margin-bottom: 3rem; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
-        .dashboard-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .card-title { font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .streak-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: #fff7ed;
+            color: #ea580c;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid #ffedd5;
+        }
+
+        .sidebar-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            font-weight: 700;
+            padding: 0 1rem 0.5rem 1rem;
+        }
+
+        .nav-item { 
+            color: #64748b; 
+            text-decoration: none; 
+            font-size: 0.925rem;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover { 
+            color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .nav-item.active {
+            color: #2563eb;
+            background-color: #eff6ff;
+            font-weight: 600;
+        }
+
+        .nav-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+        }
+
+        .nav-item.active .nav-badge {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        /* Main View Container */
+        .main-container { 
+            flex: 1;
+            margin-left: 280px; 
+            padding: 2.5rem 3rem;
+            max-width: 1200px; 
+        }
+
+        h1 { 
+            font-size: 1.85rem; 
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem; 
+            letter-spacing: -0.025em;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .section-block {
+            margin-bottom: 3.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .action-cluster {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        /* Dashboard Application Grid */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .icon-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-decoration: none;
+            color: #334155;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            user-select: none; 
+        }
+
+        .icon-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+            color: #2563eb;
+        }
+
+        .icon-card .icon-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .add-card {
+            border: 2px dashed #cbd5e1;
+            background: transparent;
+            color: #64748b;
+            box-shadow: none;
+        }
+
+        .add-card:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+
+        /* Institutional Workspace Styling */
+        .table-container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.925rem;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            user-select: none;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr.task-row:hover { background-color: #f8fafc; cursor: pointer; }
+
+        /* Badges styling */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .badge-courses { background: #eff6ff; color: #2563eb; }
+        .badge-assignments { background: #fef2f2; color: #ef4444; }
+        .badge-projects { background: #faf5ff; color: #a855f7; }
+        .badge-resources { background: #f0fdf4; color: #22c55e; }
+        .badge-origin { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+        .empty-state { padding: 3rem; text-align: center; color: #64748b; font-size: 0.95rem; }
+
+        .filter-alert {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            margin-left: 1rem;
+            cursor: pointer;
+        }
+
+        /* Custom Context Menu Styling */
+        .context-menu {
+            position: fixed;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            width: 160px;
+            z-index: 1000;
+            display: none;
+            padding: 0.35rem;
+        }
+
+        .context-menu button {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .context-menu button:hover { background-color: #f1f5f9; }
+        .context-menu button.delete-btn { color: #ef4444; }
+        .context-menu button.delete-btn:hover { background-color: #fef2f2; }
+
+        /* Modal Overlay Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 999;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-box {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .modal-box h3 { font-size: 1.2rem; margin-bottom: 1.25rem; color: #0f172a; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.35rem; }
         
-        /* Unified Form Controls */
-        input, select, textarea { width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.925rem; background: #ffffff; outline: none; margin-bottom: 0.75rem; }
-        input:focus, select:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #1e293b;
+            outline: none;
+            background: #ffffff;
+            font-family: inherit;
+        }
 
-        /* Native List & Table UI Matrices */
-        .table-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-        th { background: #f8fafc; color: #64748b; font-weight: 600; padding: 0.85rem 1.25rem; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 0.85rem 1.25rem; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
 
-        /* Dynamic Graphics Progress Blocks Elements */
-        .progress-bar-track { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 0.35rem; }
-        .progress-bar-fill { height: 100%; background: #2563eb; width: 0%; transition: width 0.4s ease; }
-
-        /* Multi-Role Adaptive Buttons classes configuration */
-        .btn-action { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; background: #2563eb; color: #ffffff; font-size: 0.85rem; font-weight: 600; padding: 0.55rem 1.1rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s; }
-        .btn-action:hover { background: #1d4ed8; }
-        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: #475569; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+        
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            font-size: 0.875rem; font-weight: 600; padding: 0.5rem 1rem;
+            border-radius: 8px; cursor: pointer; border: none; transition: background 0.2s;
+        }
+        .btn-primary { background-color: #2563eb; color: #ffffff; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: #e2e8f0; color: #475569; }
+        .btn-secondary:hover { background-color: #cbd5e1; }
+        .btn-success { background-color: #16a34a; color: #ffffff; }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-outline { background-color: transparent; border: 1px solid #cbd5e1; color: #475569; }
         .btn-outline:hover { background: #f8fafc; }
 
-        /* Badge Asset Classes Utilities */
-        .badge { display: inline-flex; align-items: center; padding: 0.2rem 0.5rem; border-radius: 40px; font-size: 0.725rem; font-weight: 600; }
-        .badge-primary { background: #eff6ff; color: #2563eb; }
-        .badge-success { background: #f0fdf4; color: #22c55e; }
-        .badge-warning { background: #fffbeb; color: #d97706; }
-        .badge-danger { background: #fef2f2; color: #ef4444; }
+        /* Hidden File Input Utility */
+        #pdf-file-input { display: none; }
 
-        /* Skill Roadmap Node Trees Blocks layout */
-        .roadmap-tree { display: flex; flex-direction: column; gap: 1rem; position: relative; padding-left: 1rem; }
-        .roadmap-node { position: relative; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
-        .roadmap-node::before { content: ''; position: absolute; left: -17px; top: 50%; width: 10px; height: 10px; background: #2563eb; border-radius: 50%; }
+        /* Feature View Blocks Panels */
+        .feature-container {
+            background: #ffffff; border: 1px solid #e2e8f0;
+            border-radius: 12px; padding: 1.5rem; margin-top: 1rem;
+        }
+        .quiz-option-card {
+            border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 0.75rem 1rem; margin-bottom: 0.5rem; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option-card:hover { background-color: #f8fafc; border-color: #cbd5e1; }
+        .roadmap-timeline { border-left: 2px solid #e2e8f0; padding-left: 1.5rem; margin-left: 0.5rem; }
+        .roadmap-node { position: relative; margin-bottom: 1.5rem; }
+        .roadmap-node::before {
+            content: ''; position: absolute; left: calc(-1.5rem - 6px); top: 4px;
+            width: 10px; height: 10px; border-radius: 50%; background: #2563eb;
+        }
 
-        /* System notification boxes configuration styling */
-        .live-ai-box { background: linear-gradient(135deg, #f8fafc, #eff6ff); border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem; margin-top: 0.75rem; font-size: 0.875rem; color: #1e3a8a; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 2000; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box { background: #ffffff; padding: 2rem; border-radius: 12px; width: 100%; max-width: 440px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        /* Offline System Indicator Status */
+        .offline-indicator {
+            background: #f1f5f9; color: #64748b; font-size: 0.75rem;
+            padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 0.25rem;
+        }
+        body.is-offline .offline-indicator {
+            background: #fee2e2; color: #ef4444;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            nav { position: relative; width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; padding: 1rem; }
+            .sidebar-brand { display: none; }
+            .main-container { margin-left: 0; padding: 1.5rem; }
+            .table-container { overflow-x: auto; }
+        }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="sidebar-brand">EDUMITE SYSTEMS</div>
-        <div class="nav-item active" data-tab="courses"><span>Course Frameworks</span><span class="nav-badge" id="sidebar-badge-courses">2</span></div>
-        <div class="nav-item" data-tab="analytics"><span>Core Performance Data</span><span class="nav-badge">Live</span></div>
-        <div class="nav-item" data-tab="career"><span>Career OS & Proof Tree</span><span class="nav-badge">Sync</span></div>
-    </nav>
-
-    <div class="role-selector-bar">
-        <div style="display:flex; align-items:center; gap:0.5rem;">
-            <i data-lucide="layers" style="color:#2563eb;"></i>
-            <span style="font-weight:700; font-size:0.95rem; color:#0f172a;">Active Terminal Space Role:</span>
+    <nav id="main-nav">
+        <div class="sidebar-brand" id="brand-home">
+            <span>EDUMITE</span>
+            <div class="streak-container" title="Daily Activity Streak Tracker">
+                <i data-lucide="flame" size="14"></i> <span id="streak-count">{{ streak }}</span> Days
+            </div>
         </div>
-        <select id="global-role-switcher" style="width:220px; margin-bottom:0; padding:0.4rem 0.6rem; font-weight:600; border-color:#2563eb; color:#2563eb;">
-            <option value="student">🎓 Student Workspace Suite</option>
-            <option value="teacher">👨‍🏫 Teacher Portal Console</option>
-            <option value="admin">🛠️ Central Administrator Suite</option>
-        </select>
-    </div>
 
+        <div class="sidebar-group">
+            <div class="sidebar-title">Metrics & Programs</div>
+            <div class="nav-item" data-filter="courses">
+                <span>Courses</span> <span class="nav-badge" id="badge-courses">0</span>
+            </div>
+            <div class="nav-item" data-filter="assignments">
+                <span>Assignments</span> <span class="nav-badge" id="badge-assignments">0</span>
+            </div>
+            <div class="nav-item" data-filter="projects">
+                <span>Projects</span> <span class="nav-badge" id="badge-projects">0</span>
+            </div>
+            <div class="nav-item" data-filter="resources">
+                <span>Resources</span> <span class="nav-badge" id="badge-resources">0</span>
+            </div>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-title">Advanced Workspaces</div>
+            <div class="nav-item" id="nav-feature-quiz">
+                <span><i data-lucide="brain-circuit" size="16" style="vertical-align: middle; margin-right: 4px;"></i> AI Quizzes</span>
+            </div>
+            <div class="nav-item" id="nav-feature-tests">
+                <span><i data-lucide="award" size="16" style="vertical-align: middle; margin-right: 4px;"></i> Adaptive Tests</span>
+            </div>
+            <div class="nav-item" id="nav-feature-planner">
+                <span><i data-lucide="calendar" size="16" style="vertical-align: middle; margin-right: 4px;"></i> Study Planner</span>
+            </div>
+            <div class="nav-item" id="nav-feature-roadmap">
+                <span><i data-lucide="map" size="16" style="vertical-align: middle; margin-right: 4px;"></i> Learning Roadmap</span>
+            </div>
+        </div>
+
+        <div style="margin-top: auto; padding: 0 1rem;">
+            <div class="offline-indicator" id="network-status">
+                <i data-lucide="wifi" size="12"></i> <span>Online Mode</span>
+            </div>
+        </div>
+    </nav>
+    
     <div class="main-container">
+        <main>
+            <div id="dynamic-feature-view" class="section-block" style="display: none;">
+                <div class="section-header">
+                    <h2 id="feature-view-title">Feature Workspace</h2>
+                    <button class="btn btn-secondary" id="close-feature-view-btn">Back to Workspace</button>
+                </div>
+                <div id="feature-view-content"></div>
+            </div>
 
-        <div id="panel-student" class="role-panel active-panel">
-            
-            <div class="grid-3" style="grid-template-columns: 1.5fr 1fr 1fr; margin-bottom: 2.5rem;">
-                <div class="dashboard-card" style="background:linear-gradient(135deg, #2563eb, #1d4ed8); color:white;">
-                    <div style="display:flex; justify-content:between; align-items:center; justify-content:space-between;">
+            <div id="core-dashboard-view">
+                <div class="section-block">
+                    <h1>Workspace</h1>
+                    <p class="subtitle">Quick access to external applications and tools. (Right-click cards to edit/remove)</p>
+
+                    <div class="icon-grid" id="apps-grid">
+                        <div class="icon-card add-card" id="open-modal-btn">
+                            <i data-lucide="plus" stroke-width="2.5" size="28"></i>
+                            <span>Add App</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <div class="section-header">
                         <div>
-                            <p style="font-size:0.8rem; font-weight:600; opacity:0.85;">CURRENT EXPERIENCE LAYER</p>
-                            <h3 style="font-size:1.5rem; font-weight:800; margin-top:0.25rem;" id="st-level-lbl">Level 4 Scholar</h3>
+                            <h2 style="display: inline-flex; align-items: center;">
+                                Institutional Workspace 
+                                <span id="active-filter-indicator"></span>
+                            </h2>
+                            <p style="color: #64748b; font-size: 0.9rem;">Track metrics across structured programs. (Click row to visit link, Right-click to manage)</p>
                         </div>
-                        <i data-lucide="award" size="32"></i>
-                    </div>
-                    <div class="progress-bar-track" style="background:rgba(255,255,255,0.25); margin-top:1rem;">
-                        <div class="progress-bar-fill" id="st-xp-bar" style="background:#ffffff; width:65%;"></div>
-                    </div>
-                    <p style="font-size:0.75rem; margin-top:0.35rem; text-align:right;" id="st-xp-lbl">2,450 / 3,000 XP accrued</p>
-                </div>
-                <div class="dashboard-card" style="display:flex; align-items:center; gap:1rem;">
-                    <div style="width:44px; height:44px; border-radius:50%; background:#fef2f2; color:#ef4444; display:flex; align-items:center; justify-content:center;"><i data-lucide="flame"></i></div>
-                    <div><span style="font-size:0.8rem; color:#64748b; font-weight:600;">DAILY STREAK INDEX</span><h3 style="font-size:1.35rem; font-weight:700;" id="st-streak-lbl">12 Active Days</h3></div>
-                </div>
-                <div class="dashboard-card" style="display:flex; align-items:center; gap:1rem;">
-                    <div style="width:44px; height:44px; border-radius:50%; background:#f0fdf4; color:#22c55e; display:flex; align-items:center; justify-content:center;"><i data-lucide="shield"></i></div>
-                    <div><span style="font-size:0.8rem; color:#64748b; font-weight:600;">OFFLINE SYSTEM CACHE</span><h3 style="font-size:1rem; font-weight:700; color:#22c55e;">Synced Ready (Indexed)</h3></div>
-                </div>
-            </div>
-
-            <div class="section-block">
-                <div class="grid-3" style="grid-template-columns: 2fr 1fr;">
-                    
-                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
-                        <div class="dashboard-card">
-                            <div class="card-title"><i data-lucide="book-open"></i> Course Subject Modules & Knowledge Repositories</div>
-                            <div class="table-container">
-                                <table>
-                                    <thead><tr><th>Topic Area Title Scope</th><th>Modules Enrolled</th><th>Telemetry Density</th></tr></thead>
-                                    <tbody id="student-courses-tbody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="dashboard-card" style="border-left:4px solid #2563eb;">
-                            <div class="card-title"><i data-lucide="cpu" style="color:#2563eb;"></i> Integrated Context-Grounded AI Tutor Instance</div>
-                            <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Ask natural language verification questions locked directly against curriculum blueprints.</p>
-                            <div style="display:flex; gap:0.5rem;">
-                                <input type="text" id="ai-query-input" placeholder="e.g., Explain relational algebra rules or normalization objectives..." style="margin-bottom:0;">
-                                <button class="btn-action" id="ai-query-trigger-btn">Query Engine</button>
-                            </div>
-                            <div class="live-ai-box" id="ai-tutor-output-frame">Awaiting target system instruction data logs tokens...</div>
+                        <div class="action-cluster">
+                            <input type="file" id="pdf-file-input" accept="application/pdf" />
+                            <button class="btn btn-outline" id="trigger-upload-btn" title="Upload document directly into Resources">
+                                <i data-lucide="file-up" size="16"></i> Upload PDF
+                            </button>
+                            <button class="btn btn-primary" id="open-task-modal-btn">
+                                <i data-lucide="plus" size="16" stroke-width="2.5"></i> Add Task
+                            </button>
                         </div>
                     </div>
 
-                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
-                        <div class="dashboard-card">
-                            <div class="card-title"><i data-lucide="file-text"></i> Document Vault & Notes Management</div>
-                            <div style="background:#f8fafc; border:2px dashed #cbd5e1; padding:1rem; border-radius:8px; text-align:center; margin-bottom:1rem; cursor:pointer;" id="dropzone-pdf">
-                                <i data-lucide="upload-cloud" style="color:#64748b; margin-bottom:0.25rem;"></i>
-                                <p style="font-size:0.8rem; font-weight:600; color:#475569;">Ingest Syllabus / Study PDF</p>
-                                <input type="file" id="hidden-file-input" style="display:none;" accept=".pdf">
-                            </div>
-                            <div id="notes-list-stack" style="display:flex; flex-direction:column; gap:0.5rem; max-height:220px; overflow-y:auto; padding-right:0.25rem;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-block">
-                <div class="grid-3" style="grid-template-columns: 1fr 1.5fr;">
-                    <div class="dashboard-card">
-                        <div class="card-title"><i data-lucide="help-circle"></i> Adaptive Testing Portal</div>
-                        <p style="font-size:0.825rem; color:#64748b; margin-bottom:1rem;">Create automated dynamic evaluation blocks directly compiled out from validated workspace notes.</p>
-                        <button class="btn-action style-secondary btn-outline" style="width:100%; margin-bottom:0.5rem;" id="action-trigger-quizgen"><i data-lucide="zap"></i> Auto-Generate Quiz</button>
-                        <div id="quiz-stack-container" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem;"></div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <div class="card-title"><i data-lucide="git-branch"></i> Gamified Skill Tree Core Roadmap Framework</div>
-                        <div class="roadmap-tree">
-                            <div class="roadmap-node">
-                                <div style="display:flex; justify-content:space-between; align-items:center;"><strong>Database Ingestion Vectors</strong><span class="badge badge-success">Completed Logged</span></div>
-                                <p style="font-size:0.75rem; color:#64748b;">Grounded core structural paradigms across multi-relational database normalization frameworks.</p>
-                            </div>
-                            <div class="roadmap-node" style="opacity:0.85;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;"><strong>Distributed Network Topologies</strong><span class="badge badge-primary">Active Run Progress</span></div>
-                                <p style="font-size:0.75rem; color:#64748b;">Processing transactional orchestration across distributed cluster compute structures.</p>
-                                <div class="progress-bar-track"><div class="progress-bar-fill" style="width:40%; background:#2563eb;"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-block" style="background:#ffffff; border:1px solid #e2e8f0; padding:2rem; border-radius:14px;">
-                <div class="section-header" style="border-bottom:1px solid #f1f5f9; padding-bottom:0.75rem; margin-bottom:1rem;">
-                    <div><h3><i data-lucide="briefcase" style="color:#2563eb;"></i> Cryptographic Portfolio Builder & Career Recommendations</h3><p style="color:#64748b; font-size:0.85rem;">Securing project deliverables using immutable ledger blocks.</p></div>
-                </div>
-                <div class="split-grid" style="grid-template-columns: 1.5fr 1.5fr;">
                     <div class="table-container">
-                        <table>
-                            <thead><tr><th>Verified Candidate Profile</th><th>Discipline Competence</th><th>Ledger Signature Hash</th></tr></thead>
-                            <tbody id="career-ledger-tbody-student"></tbody>
+                        <table id="tasks-table">
+                            <thead>
+                                <tr>
+                                    <th>Task Name</th>
+                                    <th>Category</th>
+                                    <th>Assigned Place</th>
+                                    <th>Due Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tasks-tbody"></tbody>
                         </table>
                     </div>
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:1.25rem;">
-                        <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;"><i data-lucide="sparkles" style="color:#2563eb;"></i> Career Ingestion Recommendation Match Summary</h4>
-                        <div id="st-recommendation-box" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
-                    </div>
                 </div>
             </div>
-
-        </div>
-
-        <div id="panel-teacher" class="role-panel">
-            <div class="section-block">
-                <div class="section-header">
-                    <div><h1>Teacher Management Dashboard Terminal</h1><p class="subtitle">Cohort insight tracking systems, automated reporting configurations, and statistical clustering maps.</p></div>
-                    <button class="btn-action" id="trigger-report-generation-btn"><i data-lucide="printer"></i> Export Automated Performance Report</button>
-                </div>
-
-                <div class="grid-3" style="grid-template-columns: 1.8fr 1.2fr;">
-                    
-                    <div class="dashboard-card">
-                        <div class="card-title"><i data-lucide="users"></i> Active Roster Tracking & Cohort Distribution Scores</div>
-                        <div class="table-container">
-                            <table>
-                                <thead><tr><th>Student Track Profile</th><th>Academic Score Grade</th><th>Engagement telemetry</th><th>Statistical Clustering Risk Bracket</th></tr></thead>
-                                <tbody id="teacher-roster-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
-                        <div class="dashboard-card">
-                            <div class="card-title"><i data-lucide="pie-chart"></i> Performance Grouping Clusters (K-Means Automated Fallback)</div>
-                            <div id="teacher-groupings-container" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
-                        </div>
-
-                        <div class="dashboard-card" style="border-left:4px solid #ef4444;">
-                            <div class="card-title" style="color:#ef4444;"><i data-lucide="alert-triangle"></i> AI Detected Weak Topic Vectors</div>
-                            <p style="font-size:0.8rem; color:#64748b; margin-bottom:0.75rem;">Algorithmic indexing identified critical data mapping comprehension gaps across these specific tracks:</p>
-                            <div style="display:flex; flex-wrap:wrap; gap:0.35rem;" id="teacher-weak-topics-box"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div id="panel-admin" class="role-panel">
-            <div class="section-block">
-                <h1>Central Systems Administrative Control Plane</h1>
-                <p class="subtitle">Platform deployment verification rules, user provisioning, and enterprise pipeline connectivity hooks.</p>
-
-                <div class="grid-3">
-                    <div class="dashboard-card">
-                        <div class="card-title"><i data-lucide="shield-alert"></i> Global Identity & User Management Access</div>
-                        <div id="admin-users-list" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-title"><i data-lucide="sliders"></i> Global Platform System Orchestrations</div>
-                        <p style="font-size:0.825rem; color:#64748b; margin-bottom:1rem;">Manage active synchronization pipelines link bridges running across system endpoints infrastructure layers.</p>
-                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                            <button class="btn-action btn-outline" style="justify-content:flex-start;" onclick="alert('Triggered global database memory defragment sequence...')"><i data-lucide="refresh-cw"></i> Defragment Context Storage</button>
-                            <button class="btn-action btn-outline" style="justify-content:flex-start;" onclick="alert('Flushing temporary offline network fallback assets data cache...')"><i data-lucide="trash-2"></i> Flush Offline Local Sync Cache</button>
-                        </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-title"><i data-lucide="link"></i> Connected Recruitment Enterprise Sync Systems</div>
-                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding:0.5rem; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0;">
-                                <span>Greenhouse ATS Endpoint</span><span class="badge badge-success">Live Connected</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding:0.5rem; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0;">
-                                <span>LinkedIn Talent Core API</span><span class="badge badge-success">Live Connected</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        </main>
     </div>
 
-    <div class="modal-overlay" id="quizgen-modal">
+    <div id="custom-context-menu" class="context-menu">
+        <button id="ctx-update-btn"><i data-lucide="edit-3" size="16"></i> Update</button>
+        <button id="ctx-quiz-btn" style="display: none;"><i data-lucide="brain" size="16"></i> Generate Quiz</button>
+        <button id="ctx-delete-btn" class="delete-btn"><i data-lucide="trash-2" size="16"></i> Delete</button>
+    </div>
+
+    <div class="modal-overlay" id="app-modal">
         <div class="modal-box">
-            <h3 style="margin-bottom:1rem;">Generate AI Grounded Quiz Blueprint</h3>
+            <h3 id="modal-title">Add Custom Shortcut</h3>
             <div class="form-group">
-                <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:0.25rem;">Evaluation Target Title Name</label>
-                <input type="text" id="modal-quiz-title-input" placeholder="e.g., Dynamic Algebra Challenge Drill">
+                <label for="app-name">Application Name</label>
+                <input type="text" id="app-name" placeholder="e.g., YouTube" autocomplete="off">
             </div>
-            <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.5rem;">
-                <button class="btn-action btn-outline" id="quizgen-modal-close-btn">Cancel</button>
-                <button class="btn-action" id="quizgen-modal-submit-btn">Compile Exam Node</button>
+            <div class="form-group">
+                <label for="app-url">Web Link / URL</label>
+                <input type="text" id="app-url" placeholder="e.g., youtube.com" autocomplete="off">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="close-modal-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-app-btn">Save Workspace</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="task-modal">
+        <div class="modal-box">
+            <h3 id="task-modal-title">Create Institutional Target</h3>
+            <div class="form-group">
+                <label for="task-name">Task Name / Deliverable</label>
+                <input type="text" id="task-name" placeholder="e.g., Advanced Calculus Exam Prep" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="task-url">Task Reference Link / URL</label>
+                <input type="text" id="task-url" placeholder="e.g., classroom.google.com" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="task-category">Category Block</label>
+                <select id="task-category">
+                    <option value="courses">Courses</option>
+                    <option value="assignments">Assignments</option>
+                    <option value="projects">Projects</option>
+                    <option value="resources">Resources</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="task-origin">Origin/Assigned Place</label>
+                <select id="task-origin">
+                    <option value="college">College</option>
+                    <option value="school">School</option>
+                    <option value="side quest">Side Quest</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="task-date">Due Date Timeline</label>
+                <input type="date" id="task-date">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="close-task-modal-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-task-btn">Save Task</button>
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Document Selection Handles
+            const appModal = document.getElementById('app-modal');
+            const appModalTitle = document.getElementById('modal-title');
+            const openAppModalBtn = document.getElementById('open-modal-btn');
+            const closeAppModalBtn = document.getElementById('close-modal-btn');
+            const saveAppBtn = document.getElementById('save-app-btn');
+            const appsGrid = document.getElementById('apps-grid');
+            const appNameInput = document.getElementById('app-name');
+            const appUrlInput = document.getElementById('app-url');
             
-            // --- WORKSPACE ROLE SPACE SWITCHER ARCHITECTURE CONTROLLER ---
-            const switcher = document.getElementById('global-role-switcher');
-            const panels = {
-                student: document.getElementById('panel-student'),
-                teacher: document.getElementById('panel-teacher'),
-                admin: document.getElementById('panel-admin')
-            };
+            const taskModal = document.getElementById('task-modal');
+            const taskModalTitle = document.getElementById('task-modal-title');
+            const openTaskModalBtn = document.getElementById('open-task-modal-btn');
+            const closeTaskModalBtn = document.getElementById('close-task-modal-btn');
+            const saveTaskBtn = document.getElementById('save-task-btn');
+            const tasksTbody = document.getElementById('tasks-tbody');
+            const taskNameInput = document.getElementById('task-name');
+            const taskUrlInput = document.getElementById('task-url');
+            const taskCategorySelect = document.getElementById('task-category');
+            const taskOriginSelect = document.getElementById('task-origin');
+            const taskDateInput = document.getElementById('task-date');
 
-            switcher.addEventListener('change', function() {
-                Object.keys(panels).forEach(key => {
-                    panels[key].classList.remove('active-panel');
-                });
-                if(panels[this.value]) {
-                    panels[this.value].classList.add('active-panel');
-                    bootstrapActiveDataSequences();
+            const contextMenu = document.getElementById('custom-context-menu');
+            const ctxUpdateBtn = document.getElementById('ctx-update-btn');
+            const ctxQuizBtn = document.getElementById('ctx-quiz-btn');
+            const ctxDeleteBtn = document.getElementById('ctx-delete-btn');
+            
+            const filterIndicator = document.getElementById('active-filter-indicator');
+            const brandHome = document.getElementById('brand-home');
+            
+            // File Upload Dom hooks
+            const pdfFileInput = document.getElementById('pdf-file-input');
+            const triggerUploadBtn = document.getElementById('trigger-upload-btn');
+
+            // Advanced Workspace Panel Selectors
+            const coreDashboardView = document.getElementById('core-dashboard-view');
+            const dynamicFeatureView = document.getElementById('dynamic-feature-view');
+            const featureViewTitle = document.getElementById('feature-view-title');
+            const featureViewContent = document.getElementById('feature-view-content');
+            const closeFeatureViewBtn = document.getElementById('close-feature-view-btn');
+
+            // Workspace Navigation Subsystem triggers
+            const navQuiz = document.getElementById('nav-feature-quiz');
+            const navTests = document.getElementById('nav-feature-tests');
+            const navPlanner = document.getElementById('nav-feature-planner');
+            const navRoadmap = document.getElementById('nav-feature-roadmap');
+            const networkStatus = document.getElementById('network-status');
+
+            // Application Engine States
+            let menuContextType = null;      
+            let currentTargetIndex = null;   
+            let activeFilterCategory = null; 
+
+            // Base Default Structures
+            const defaultApps = [
+                { name: 'Google', url: 'https://www.google.com' },
+                { name: 'Zoom', url: 'https://zoom.us' },
+                { name: 'GitHub', url: 'https://github.com' }
+            ];
+
+            const defaultTasks = [
+                { name: 'Database Management Assignment #2', url: 'https://classroom.google.com', category: 'assignments', origin: 'college', date: '2026-06-18' },
+                { name: 'Build Dashboard Layout System', url: 'https://github.com', category: 'projects', origin: 'side quest', date: '2026-06-25' }
+            ];
+
+            let customApps = JSON.parse(localStorage.getItem('edumite_apps')) || defaultApps;
+            let customTasks = JSON.parse(localStorage.getItem('edumite_tasks')) || defaultTasks;
+            let studyPlans = JSON.parse(localStorage.getItem('edumite_planner')) || [];
+
+            /* ==========================================
+               OFFLINE / ONLINE NETWORK CONNECTIVITY CHECK
+               ========================================== */
+            function updateNetworkUI() {
+                if (navigator.onLine) {
+                    document.body.classList.remove('is-offline');
+                    networkStatus.querySelector('span').textContent = "Online Mode";
+                    networkStatus.style.color = "#64748b";
+                    triggerUploadBtn.disabled = false;
+                } else {
+                    document.body.classList.add('is-offline');
+                    networkStatus.querySelector('span').textContent = "Offline Mode (Local Cache Active)";
+                    networkStatus.style.color = "#ef4444";
+                    triggerUploadBtn.disabled = true; // Block backend file transit requests
                 }
-            });
+            }
+            window.addEventListener('online', updateNetworkUI);
+            window.addEventListener('offline', updateNetworkUI);
+            updateNetworkUI();
 
-            /* =================================================================
-               CORE INGESTION TRANS-PIPELINE BACKEND NETWORK CONTROLLER CALLS
-               ================================================================= */
-            async function bootstrapActiveDataSequences() {
-                // Fetch student curriculum course subject nodes layout items map
-                try {
-                    const courseRes = await fetch('/api/education/courses');
-                    const courseData = await courseRes.json();
-                    const courseTbody = document.getElementById('student-courses-tbody');
-                    courseTbody.innerHTML = '';
-                    
-                    courseData.courses.forEach(c => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><strong style="color:#0f172a;">${c.title}</strong></td><td><span class="badge badge-primary">${c.modules} Study Modules</span></td><td><span class="badge badge-success">Telemetry Engaged</span></td>`;
-                        courseTbody.appendChild(tr);
-                    });
-                    document.getElementById('sidebar-badge-courses').textContent = courseData.courses.length;
-
-                    // Pull current note documents inventory
-                    const notesRes = await fetch('/api/education/notes');
-                    const notesData = await notesRes.json();
-                    const notesStack = document.getElementById('notes-list-stack');
-                    notesStack.innerHTML = '';
-                    
-                    notesData.notes.forEach(n => {
-                        const div = document.createElement('div');
-                        div.style = "background:#f8fafc; border:1px solid #e2e8f0; padding:0.75rem; border-radius:8px; font-size:0.85rem;";
-                        div.innerHTML = `
-                            <div style="display:flex; justify-content:space-between; align-items:center;"><strong>${n.title}</strong><button class="btn-action btn-outline trigger-summarize-btn" data-id="${n.id}" style="padding:0.15rem 0.4rem; font-size:0.7rem;">AI Recap</button></div>
-                            <p style="font-size:0.75rem; color:#64748b; margin-top:0.25rem;">${n.summary}</p>
-                        `;
-                        notesStack.appendChild(div);
-                    });
-
-                    notesStack.querySelectorAll('.trigger-summarize-btn').forEach(btn => {
-                        btn.addEventListener('click', async function() {
-                            const nid = this.getAttribute('data-id');
-                            const sumRes = await fetch('/api/ai/summarize-note', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({note_id:nid}) });
-                            if(sumRes.ok) bootstrapActiveDataSequences();
-                        });
-                    });
-
-                    // Fetch active adaptive examinations quizzes frames
-                    const quizRes = await fetch('/api/education/quizzes');
-                    const quizData = await quizRes.json();
-                    const quizStack = document.getElementById('quiz-stack-container');
-                    quizStack.innerHTML = '';
-                    
-                    quizData.quizzes.forEach(q => {
-                        const div = document.createElement('div');
-                        div.style = "padding:0.65rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:0.825rem;";
-                        div.innerHTML = `<span><i data-lucide="help-circle" style="display:inline; vertical-align:middle;" size="14"></i> ${q.title}</span><button class="btn-action" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="alert('Adaptive Testing Core Engine Instruction: Loading question matrix sequence...')">Launch</button>`;
-                        quizStack.appendChild(div);
-                    });
-
-                    // Load Career OS blockchain verification ledgers summary items
-                    const careerRes = await fetch('/api/career/dashboard');
-                    const careerData = await careerRes.json();
-                    const careerTbody = document.getElementById('career-ledger-tbody-student');
-                    careerTbody.innerHTML = '';
-                    
-                    careerData.ledger.forEach(item => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><strong>${item.student}</strong></td><td>${item.skill}</td><td><span class="badge badge-hash" style="font-family:monospace; background:#f1f5f9; border:1px solid #cbd5e1;">${item.hash}</span></td>`;
-                        careerTbody.appendChild(tr);
-                    });
-
-                    const recBox = document.getElementById('st-recommendation-box');
-                    recBox.innerHTML = '';
-                    careerData.recommendations.forEach(r => {
-                        const d = document.createElement('div');
-                        d.innerHTML = `<span class="badge badge-primary" style="margin-bottom:0.15rem;">Discipline: ${r.skill}</span><p style="font-size:0.75rem; color:#475569;">Match verification context trigger: ${r.reason}</p>`;
-                        recBox.appendChild(d);
-                    });
-
-                    // Ingest and render configuration sets for Teacher Portal Dashboard Analytics
-                    const teacherRes = await fetch('/api/teacher/analytics');
-                    const teacherData = await teacherRes.json();
-                    
-                    const tRosterTbody = document.getElementById('teacher-roster-tbody');
-                    tRosterTbody.innerHTML = '';
-                    teacherData.roster.forEach(s => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}% Passing Rate</td><td>${s.engagement}% Engagement</td><td><span class="badge ${s.cluster === 'Critical Attention' ? 'badge-danger' : 'badge-success'}">${s.cluster}</span></td>`;
-                        tRosterTbody.appendChild(tr);
-                    });
-
-                    const groupsCont = document.getElementById('teacher-groupings-container');
-                    groupsCont.innerHTML = '';
-                    Object.keys(teacherData.groupings).forEach(gName => {
-                        const members = teacherData.groupings[gName];
-                        const div = document.createElement('div');
-                        div.style = "background:#f8fafc; border:1px solid #e2e8f0; padding:0.5rem; border-radius:6px; font-size:0.825rem;";
-                        div.innerHTML = `<strong>${gName}</strong><p style="font-size:0.75rem; color:#64748b; margin-top:0.15rem;">Enrolled instances: ${members.join(', ') || 'None matched'}</p>`;
-                        groupsCont.appendChild(div);
-                    });
-
-                    const weakBox = document.getElementById('teacher-weak-topics-box');
-                    weakBox.innerHTML = '';
-                    teacherData.roster.forEach(s => {
-                        s.weak_topics.forEach(topic => {
-                            const span = document.createElement('span');
-                            span.className = "badge badge-danger";
-                            span.style = "margin-right:0.25rem; margin-bottom:0.25rem;";
-                            span.textContent = `${topic} (${s.name})`;
-                            weakBox.appendChild(span);
-                        });
-                    });
-
-                    // Setup user configuration arrays for central administration panels
-                    const adminUserStack = document.getElementById('admin-users-list');
-                    adminUserStack.innerHTML = '';
-                    ['Alex Mercer (Student)', 'Baird Cooper (Student)', 'Chloe Frazer (Student)', 'Instructor Deployment Node (Teacher)'].forEach(u => {
-                        const div = document.createElement('div');
-                        div.style = "padding:0.5rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;";
-                        div.innerHTML = `<span>${u}</span><button class="btn-action btn-outline" style="padding:0.15rem 0.35rem; font-size:0.65rem;" onclick="alert('Identity Vault access restriction: Core control actions locked under superuser protocol authorization codes.')">Edit Scope</button>`;
-                        adminUserStack.appendChild(div);
-                    });
-
-                    lucide.createIcons();
-
-                } catch(e) { console.error("Global system initialization stream configuration interrupt anomaly context:", e); }
+            /* ==========================================
+               DYNAMIC BADGE COUNT CALCULATOR ENGINE
+               ========================================== */
+            function updateSidebarBadges() {
+                const counts = { courses: 0, assignments: 0, projects: 0, resources: 0 };
+                customTasks.forEach(task => {
+                    if (counts[task.category] !== undefined) counts[task.category]++;
+                });
+                Object.keys(counts).forEach(key => {
+                    document.getElementById(`badge-${key}`).textContent = counts[key];
+                });
             }
 
-            /* =================================================================
-               INTERACTIVE ARTIFICIAL INTELLIGENCE GROUNDED TUTOR CLIENT DRIVERS
-               ================================================================= */
-            const aiInput = document.getElementById('ai-query-input');
-            const aiTriggerBtn = document.getElementById('ai-query-trigger-btn');
-            const aiOutputFrame = document.getElementById('ai-tutor-output-frame');
+            /* ==========================================
+               SPACE RENDER LOGIC FUNCTIONS 
+               ========================================== */
+            function renderApps() {
+                const cards = appsGrid.querySelectorAll('.icon-card:not(.add-card)');
+                cards.forEach(card => card.remove());
 
-            aiTriggerBtn.addEventListener('click', async function() {
-                const query = aiInput.value.trim();
-                if(!query) return;
-                aiOutputFrame.textContent = "AI Context Grounding Engine: Navigating virtual vectors matrix lines...";
-                
-                const response = await fetch('/api/ai/ask', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ prompt: query, context_source: 'curriculum' })
-                });
-                if(response.ok) {
-                    const parsed = await response.json();
-                    aiOutputFrame.textContent = parsed.reply;
-                    
-                    // Award XP to student profile on successful curriculum system interaction
-                    await fetch('/api/gamification/award-xp', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ student_id: 'st_01', amount: 150 })
+                customApps.forEach((app, index) => {
+                    const anchor = document.createElement('a');
+                    anchor.href = app.url;
+                    anchor.target = "_blank";
+                    anchor.rel = "noopener noreferrer";
+                    anchor.className = "icon-card";
+                    anchor.innerHTML = `
+                        <div class="icon-placeholder">${app.name.charAt(0)}</div>
+                        <span>${app.name}</span>
+                    `;
+                    anchor.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        triggerContextMenu('app', index, e.clientX, e.clientY);
                     });
-                    bootstrapActiveDataSequences();
-                }
-            });
-
-            // --- QUIZ OVERLAY GENERATION TRIGGER CONTROLLER ACTIONS ---
-            const quizgenModal = document.getElementById('quizgen-modal');
-            document.getElementById('action-trigger-quizgen').addEventListener('click', () => { quizgenModal.classList.add('active'); });
-            document.getElementById('quizgen-modal-close-btn').addEventListener('click', () => { quizgenModal.classList.remove('active'); });
-            
-            document.getElementById('quizgen-modal-submit-btn').addEventListener('click', async () => {
-                const quizTitle = document.getElementById('modal-quiz-title-input').value.trim();
-                if(!quizTitle) return alert('Enter a target challenge validation title name descriptor.');
-                
-                const response = await fetch('/api/ai/generate-quiz', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ source_id: 'nt_01', title: quizTitle })
+                    appsGrid.insertBefore(anchor, openAppModalBtn);
                 });
-                if(response.ok) {
-                    quizgenModal.classList.remove('active');
-                    bootstrapActiveDataSequences();
+            }
+
+            function renderTasks() {
+                tasksTbody.innerHTML = '';
+                const visibleTasks = activeFilterCategory ? customTasks.filter(t => t.category === activeFilterCategory) : customTasks;
+
+                if (activeFilterCategory) {
+                    filterIndicator.innerHTML = `<span class="filter-alert" id="clear-filter-btn">${activeFilterCategory} <i data-lucide="x" size="14"></i></span>`;
+                    document.getElementById('clear-filter-btn').addEventListener('click', clearFilter);
+                } else {
+                    filterIndicator.innerHTML = '';
                 }
+
+                if(visibleTasks.length === 0) {
+                    tasksTbody.innerHTML = `<tr><td colspan="4" class="empty-state">No active items found under this scope.</td></tr>`;
+                    lucide.createIcons();
+                    return;
+                }
+
+                visibleTasks.forEach((task) => {
+                    const trueIndex = customTasks.indexOf(task);
+                    const row = document.createElement('tr');
+                    row.className = 'task-row';
+
+                    let readableDate = "No Deadline Set";
+                    if(task.date) {
+                        const parts = task.date.split('-');
+                        if(parts.length === 3) {
+                            readableDate = new Date(parts[0], parts[1]-1, parts[2]).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'});
+                        }
+                    }
+
+                    row.innerHTML = `
+                        <td style="font-weight: 500; color: #0f172a;">${task.name}</td>
+                        <td><span class="badge badge-${task.category}">${task.category}</span></td>
+                        <td><span class="badge badge-origin">${task.origin}</span></td>
+                        <td style="color: #64748b;">${readableDate}</td>
+                    `;
+
+                    row.addEventListener('click', function() {
+                        if (task.url) window.open(task.url, '_blank', 'noopener,noreferrer');
+                    });
+
+                    row.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        triggerContextMenu('task', trueIndex, e.clientX, e.clientY);
+                    });
+
+                    tasksTbody.appendChild(row);
+                });
+                updateSidebarBadges();
+                lucide.createIcons();
+            }
+
+            /* ==========================================
+               SIDEBAR FILTER ACTIONS CONTROLLER
+               ========================================== */
+            const sidebarItems = document.querySelectorAll('.sidebar-group .nav-item');
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    deactivateFeatureNavigation();
+                    const selectedCategory = this.getAttribute('data-filter');
+                    if (this.classList.contains('active')) {
+                        clearFilter();
+                    } else {
+                        sidebarItems.forEach(i => i.classList.remove('active'));
+                        this.classList.add('active');
+                        activeFilterCategory = selectedCategory;
+                        renderTasks();
+                    }
+                });
             });
 
-            // --- DOCUMENT VAULT PDF DRAG AND DROP CAPTURE ENGINE ---
-            const dropzone = document.getElementById('dropzone-pdf');
-            const hiddenInput = document.getElementById('hidden-file-input');
+            function clearFilter() {
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                activeFilterCategory = null;
+                renderTasks();
+            }
+            brandHome.addEventListener('click', () => {
+                clearFilter();
+                deactivateFeatureNavigation();
+            });
+
+            /* ==========================================
+               PDF UPLOAD ROUTINE HANDLING
+               ========================================== */
+            triggerUploadBtn.addEventListener('click', () => pdfFileInput.click());
             
-            dropzone.addEventListener('click', () => hiddenInput.click());
-            hiddenInput.addEventListener('change', async function() {
-                if(!this.files.length) return;
-                const formData = new FormData();
-                formData.append('file', this.files[0]);
+            pdfFileInput.addEventListener('change', async function() {
+                if (this.files.length === 0) return;
+                const targetFile = this.files[0];
                 
-                dropzone.querySelector('p').textContent = "Processing PDF Vectors...";
-                const res = await fetch('/api/education/upload-pdf', { method: 'POST', body: formData });
-                if(res.ok) {
-                    dropzone.querySelector('p').textContent = "Ingest Syllabus / Study PDF";
-                    alert('PDF successfully ingested, tokens mapped, and schema files compiled inside offline fallback state.');
-                    bootstrapActiveDataSequences();
+                // Construct multipart request structures
+                const formData = new FormData();
+                formData.append('file', targetFile);
+
+                try {
+                    triggerUploadBtn.disabled = true;
+                    triggerUploadBtn.innerHTML = `<i data-lucide="loader" size="16" class="spin"></i> Processing...`;
+                    lucide.createIcons();
+
+                    const response = await fetch('/api/upload-pdf', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.detail || 'Upload structural breakdown failed.');
+
+                    // Automatically register upload metadata inside client resources collection
+                    customTasks.push({
+                        name: `[Document] ${result.filename}`,
+                        url: result.url,
+                        category: 'resources',
+                        origin: 'side quest',
+                        date: result.uploaded_at
+                    });
+
+                    localStorage.setItem('edumite_tasks', JSON.stringify(customTasks));
+                    renderTasks();
+                    alert(`PDF successfully mapped and parsed into local Resources storage!`);
+                } catch (err) {
+                    alert(`Error processing file: ${err.message}`);
+                } finally {
+                    triggerUploadBtn.disabled = false;
+                    triggerUploadBtn.innerHTML = `<i data-lucide="file-up" size="16"></i> Upload PDF`;
+                    pdfFileInput.value = '';
+                    lucide.createIcons();
                 }
             });
 
-            // Automated Automated Reporting Reporting Generator Engine Click Hook
-            document.getElementById('trigger-report-generation-btn').addEventListener('click', () => {
-                alert('Automated Report Engine Operation: Compiled cross-cohort passing grades. Generated structural system matrix tracking metrics index file: "EDUMITE_COHORT_SUMMARY_2026.pdf"');
+            /* ==========================================
+               CONTEXT MENU CONTROLLER ENGINE
+               ========================================== */
+            function triggerContextMenu(type, index, clientX, clientY) {
+                menuContextType = type;
+                currentTargetIndex = index;
+                contextMenu.style.top = `${clientY}px`;
+                contextMenu.style.left = `${clientX}px`;
+                contextMenu.style.display = 'block';
+
+                // Display option to trigger AI quiz generation if targeting a resource document
+                if (type === 'task' && customTasks[index].category === 'resources') {
+                    ctxQuizBtn.style.display = 'flex';
+                } else {
+                    ctxQuizBtn.style.display = 'none';
+                }
+            }
+
+            window.addEventListener('click', (e) => {
+                if (!contextMenu.contains(e.target)) contextMenu.style.display = 'none';
             });
 
-            // Bootstrap application ecosystem core runtime views on launch execution
-            bootstrapActiveDataSequences();
+            ctxDeleteBtn.addEventListener('click', () => {
+                if (currentTargetIndex === null) return;
+                if (menuContextType === 'app') {
+                    customApps.splice(currentTargetIndex, 1);
+                    localStorage.setItem('edumite_apps', JSON.stringify(customApps));
+                    renderApps();
+                } else if (menuContextType === 'task') {
+                    customTasks.splice(currentTargetIndex, 1);
+                    localStorage.setItem('edumite_tasks', JSON.stringify(customTasks));
+                    renderTasks();
+                }
+                contextMenu.style.display = 'none';
+            });
+
+            ctxUpdateBtn.addEventListener('click', () => {
+                if (currentTargetIndex === null) return;
+                contextMenu.style.display = 'none';
+                if (menuContextType === 'app') {
+                    const targetApp = customApps[currentTargetIndex];
+                    appModalTitle.textContent = "Update Shortcut";
+                    appNameInput.value = targetApp.name;
+                    appUrlInput.value = targetApp.url;
+                    appModal.classList.add('active');
+                } else if (menuContextType === 'task') {
+                    const targetTask = customTasks[currentTargetIndex];
+                    taskModalTitle.textContent = "Update Institutional Target";
+                    taskNameInput.value = targetTask.name;
+                    taskUrlInput.value = targetTask.url || '';
+                    taskCategorySelect.value = targetTask.category;
+                    taskOriginSelect.value = targetTask.origin;
+                    taskDateInput.value = targetTask.date;
+                    taskModal.classList.add('active');
+                }
+            });
+
+            ctxQuizBtn.addEventListener('click', () => {
+                if (currentTargetIndex === null) return;
+                contextMenu.style.display = 'none';
+                const resource = customTasks[currentTargetIndex];
+                triggerQuizGenerationWorkspace(resource.name);
+            });
+
+            /* ==========================================
+               ADVANCED MODULAR FEATURES WORKSPACE
+               ========================================== */
+            function activateFeatureView(title) {
+                coreDashboardView.style.display = 'none';
+                dynamicFeatureView.style.display = 'block';
+                featureViewTitle.textContent = title;
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function deactivateFeatureNavigation() {
+                coreDashboardView.style.display = 'block';
+                dynamicFeatureView.style.display = 'none';
+                document.querySelectorAll('.sidebar-group .nav-item').forEach(i => i.classList.remove('active'));
+            }
+
+            closeFeatureViewBtn.addEventListener('click', deactivateFeatureNavigation);
+
+            // FEATURE 1: AI Quiz Generation Interface Engine
+            async function triggerQuizGenerationWorkspace(filename) {
+                activateFeatureView("AI Quiz Generation Studio");
+                featureViewContent.innerHTML = `<div class="empty-state"><i data-lucide="loader" class="spin"></i> Querying dynamic AI processing parameters...</div>`;
+                lucide.createIcons();
+
+                if (!navigator.onLine) {
+                    // Fallback configuration if offline
+                    renderMockQuizHTML("Offline Simulated Baseline Evaluation", [
+                        {"id": 1, "question": "Offline Mode active. Is data cached?", "options": ["Yes, locally stored", "No connectivity"], "answer": 0}
+                    ]);
+                    return;
+                }
+
+                try {
+                    const params = new URLSearchParams();
+                    params.append('filename', filename);
+                    const response = await fetch('/api/generate-quiz', { method: 'POST', body: params });
+                    const quiz = await response.json();
+                    renderMockQuizHTML(quiz.quiz_title, quiz.questions);
+                } catch {
+                    alert("Unable to query core AI services schema components.");
+                }
+            }
+
+            function renderMockQuizHTML(title, questions) {
+                let html = `<div class="feature-container"><h3>${title}</h3><p class="subtitle">Parsed via context matching systems</p>`;
+                questions.forEach((q, idx) => {
+                    html += `<div style="margin-bottom: 1.5rem;"><p style="font-weight:600; margin-bottom:0.5rem;">Q${idx+1}: ${q.question}</p>`;
+                    q.options.forEach((opt, optIdx) => {
+                        html += `<div class="quiz-option-card" onclick="this.style.background= ${optIdx === q.answer} ? '#dcfce7':'#fee2e2'">${opt}</div>`;
+                    });
+                    html += `</div>`;
+                });
+                html += `</div>`;
+                featureViewContent.innerHTML = html;
+            }
+
+            navQuiz.addEventListener('click', () => {
+                activateFeatureView("AI Quiz Generation Engine");
+                featureViewContent.innerHTML = `
+                    <div class="feature-container">
+                        <h3>Run Target Analysis</h3>
+                        <p class="subtitle">Select any dynamic document path inside your Institutional Resources block (via mouse right-click) to spin up automated quizzes immediately.</p>
+                    </div>`;
+            });
+
+            // FEATURE 2: Adaptive Practice Tests Engine
+            navTests.addEventListener('click', () => {
+                activateFeatureView("Adaptive Practice Diagnostics");
+                featureViewContent.innerHTML = `
+                    <div class="feature-container">
+                        <h3>System Diagnostic Proficiency Evaluation</h3>
+                        <p class="subtitle">This system continuously adjusts problem parameters based on metrics evaluated from historical performance.</p>
+                        <div style="padding:2rem; background:#f8fafc; border-radius:8px; text-align:center; border:1px dashed #cbd5e1;">
+                            <h4 style="margin-bottom:0.5rem;">Current General Skill Metric Score: Tier 2 (Intermediate)</h4>
+                            <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Adaptive balancing modules are configured to deliver targeted testing metrics.</p>
+                            <button class="btn btn-success" onclick="alert('Starting adaptive test generation sequence...')">Initialize Calibration Session</button>
+                        </div>
+                    </div>`;
+            });
+
+            // FEATURE 3: Study Planner Interface System
+            function renderPlannerWorkspace() {
+                let itemsHtml = '';
+                studyPlans.forEach((p, idx) => {
+                    itemsHtml += `
+                        <div style="display:flex; justify-content:space-between; padding:0.75rem; background:#f8fafc; border-radius:6px; margin-bottom:0.5rem; border:1px solid #e2e8f0;">
+                            <div><strong>${p.topic}</strong> — <span style="color:#64748b;">Allocation: ${p.hours} Hours</span></div>
+                            <button class="btn btn-outline" style="padding:0.2rem 0.5rem; color:#ef4444;" id="del-plan-${idx}">Remove</button>
+                        </div>`;
+                });
+
+                featureViewContent.innerHTML = `
+                    <div class="feature-container">
+                        <h3>Study Planner Matrix</h3>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>Target Framework / Topic</label>
+                            <input type="text" id="plan-topic" placeholder="e.g., Linear Algebra Foundations">
+                        </div>
+                        <div class="form-group">
+                            <label>Target Timeline (Allocated Hours)</label>
+                            <input type="number" id="plan-hours" value="4">
+                        </div>
+                        <button class="btn btn-primary" id="commit-plan-btn">Commit Tracking Node</button>
+                        <hr style="margin:1.5rem 0; border:0; border-top:1px solid #e2e8f0;">
+                        <h4>Active Target Schedules</h4>
+                        <div style="margin-top:1rem;">${itemsHtml || '<p class="empty-state">No target allocation schemas logged yet.</p>'}</div>
+                    </div>`;
+
+                if(studyPlans.length > 0) {
+                    studyPlans.forEach((p, idx) => {
+                        document.getElementById(`del-plan-${idx}`).addEventListener('click', () => {
+                            studyPlans.splice(idx, 1);
+                            localStorage.setItem('edumite_planner', JSON.stringify(studyPlans));
+                            renderPlannerWorkspace();
+                        });
+                    });
+                }
+
+                document.getElementById('commit-plan-btn').addEventListener('click', () => {
+                    const topic = document.getElementById('plan-topic').value.trim();
+                    const hours = document.getElementById('plan-hours').value;
+                    if(!topic) return alert('Enter a valid reference objective.');
+                    studyPlans.push({ topic, hours });
+                    localStorage.setItem('edumite_planner', JSON.stringify(studyPlans));
+                    renderPlannerWorkspace();
+                });
+            }
+            navPlanner.addEventListener('click', () => {
+                activateFeatureView("Structured Study Planner");
+                renderPlannerWorkspace();
+            });
+
+            // FEATURE 4: Learning Roadmap Layout System
+            navRoadmap.addEventListener('click', () => {
+                activateFeatureView("AI Learning Curriculums");
+                featureViewContent.innerHTML = `
+                    <div class="feature-container">
+                        <h3>Construct Sequential Objective Framework</h3>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>Target Discipline Objective</label>
+                            <input type="text" id="roadmap-query" placeholder="e.g., Quantum Mechanics or Deep Learning Systems">
+                        </div>
+                        <button class="btn btn-primary" id="trigger-roadmap-build">Generate Structural Sequence</button>
+                        <div id="roadmap-results-container" style="margin-top:1.5rem;"></div>
+                    </div>`;
+
+                document.getElementById('trigger-roadmap-build').addEventListener('click', async () => {
+                    const query = document.getElementById('roadmap-query').value.trim();
+                    if(!query) return alert('Input target conceptual node name.');
+                    const resContainer = document.getElementById('roadmap-results-container');
+                    resContainer.innerHTML = `<i data-lucide="loader" class="spin"></i> Mapping structural sequence...`;
+                    lucide.createIcons();
+
+                    if(!navigator.onLine) {
+                        resContainer.innerHTML = `<p style="color:#ef4444;">Offline Mode active. Re-establish tracking connection to query structural sequencing graphs.</p>`;
+                        return;
+                    }
+
+                    const params = new URLSearchParams();
+                    params.append('topic', query);
+                    const response = await fetch('/api/generate-roadmap', { method: 'POST', body: params });
+                    const mapData = await response.json();
+
+                    let mapHtml = `<div class="roadmap-timeline" style="margin-top:1rem;">`;
+                    mapData.steps.forEach(s => {
+                        mapHtml += `<div class="roadmap-node"><h5>${s.phase}</h5><p style="font-size:0.875rem; color:#64748b;">${s.desc}</p></div>`;
+                    });
+                    mapHtml += `</div>`;
+                    resContainer.innerHTML = mapHtml;
+                });
+            });
+
+            /* ==========================================
+               MODAL INPUT FORMS MANAGEMENT
+               ========================================== */
+            openAppModalBtn.addEventListener('click', () => {
+                menuContextType = null; currentTargetIndex = null;
+                appModalTitle.textContent = "Add Custom Shortcut";
+                appNameInput.value = ''; appUrlInput.value = '';
+                appModal.classList.add('active');
+                appNameInput.focus();
+            });
+            closeAppModalBtn.addEventListener('click', () => appModal.classList.remove('active'));
+
+            openTaskModalBtn.addEventListener('click', () => {
+                menuContextType = null; currentTargetIndex = null;
+                taskModalTitle.textContent = "Create Institutional Target";
+                taskNameInput.value = ''; taskUrlInput.value = '';
+                taskCategorySelect.value = activeFilterCategory || "courses";
+                taskOriginSelect.selectedIndex = 0; taskDateInput.value = '';
+                taskModal.classList.add('active');
+                taskNameInput.focus();
+            });
+            closeTaskModalBtn.addEventListener('click', () => taskModal.classList.remove('active'));
+
+            window.addEventListener('click', (e) => {
+                if (e.target === appModal) appModal.classList.remove('active');
+                if (e.target === taskModal) taskModal.classList.remove('active');
+            });
+
+            /* ==========================================
+               SAVE/SUBMISSION TRANSACTION PROCESSORS
+               ========================================== */
+            saveAppBtn.addEventListener('click', () => {
+                const name = appNameInput.value.trim();
+                let url = appUrlInput.value.trim();
+                if (!name || !url) return alert('Please enter both parameters.');
+                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+                if (menuContextType === 'app' && currentTargetIndex !== null) {
+                    customApps[currentTargetIndex] = { name, url };
+                } else {
+                    customApps.push({ name, url });
+                }
+                localStorage.setItem('edumite_apps', JSON.stringify(customApps));
+                renderApps();
+                appModal.classList.remove('active');
+            });
+
+            saveTaskBtn.addEventListener('click', () => {
+                const name = taskNameInput.value.trim();
+                let url = taskUrlInput.value.trim();
+                const category = taskCategorySelect.value;
+                const origin = taskOriginSelect.value;
+                const date = taskDateInput.value;
+
+                if (!name || !date || !url) return alert('Please complete title, access link, and timeline parameters.');
+                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+                if (menuContextType === 'task' && currentTargetIndex !== null) {
+                    customTasks[currentTargetIndex] = { name, url, category, origin, date };
+                } else {
+                    customTasks.push({ name, url, category, origin, date });
+                }
+                localStorage.setItem('edumite_tasks', JSON.stringify(customTasks));
+                renderTasks();
+                taskModal.classList.remove('active');
+            });
+
+            // Core Initialization Pipeline
+            renderApps();
+            renderTasks();
         });
     </script>
 </body>
