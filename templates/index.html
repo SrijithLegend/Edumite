@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDUMITE - Multi-Role Enterprise Platform</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Base Structural Layout Configurations */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; }
+
+        /* Top Banner Navigation Dashboard Selector Frame */
+        .role-selector-bar {
+            position: fixed; top: 0; left: 280px; right: 0; height: 60px; background: #ffffff;
+            border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 2.5rem; z-index: 900;
+        }
+
+        /* Sidebar Navigation Layout Panel */
+        nav { width: 280px; height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; gap: 0.35rem; background: #ffffff; padding: 2rem 1rem; border-right: 1px solid #e2e8f0; box-shadow: 1px 0 3px 0 rgba(0, 0, 0, 0.05); overflow-y: auto; }
+        .sidebar-brand { font-size: 1.1rem; font-weight: 700; color: #0f172a; padding: 0 1rem 1.5rem 1rem; border-bottom: 1px solid #f1f5f9; margin-bottom: 1.5rem; letter-spacing: -0.025em; }
+        .nav-item { color: #64748b; text-decoration: none; font-size: 0.925rem; font-weight: 500; padding: 0.75rem 1rem; border-radius: 6px; transition: all 0.2s ease; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .nav-item:hover, .nav-item.active { color: #2563eb; background-color: #eff6ff; }
+        .nav-badge { background-color: #f1f5f9; color: #475569; font-size: 0.75rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 20px; }
+
+        /* View Container Framework */
+        .main-container { flex: 1; margin-left: 280px; margin-top: 60px; padding: 2.5rem; max-width: 1400px; }
+        .role-panel { display: none; }
+        .role-panel.active-panel { display: block; }
+
+        /* General Module Card UI Component Structural Models */
+        .section-block { margin-bottom: 3rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .dashboard-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .card-title { font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        
+        /* Unified Form Controls */
+        input, select, textarea { width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.925rem; background: #ffffff; outline: none; margin-bottom: 0.75rem; }
+        input:focus, select:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+
+        /* Native List & Table UI Matrices */
+        .table-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        th { background: #f8fafc; color: #64748b; font-weight: 600; padding: 0.85rem 1.25rem; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 0.85rem 1.25rem; border-bottom: 1px solid #f1f5f9; color: #334155; }
+
+        /* Dynamic Graphics Progress Blocks Elements */
+        .progress-bar-track { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 0.35rem; }
+        .progress-bar-fill { height: 100%; background: #2563eb; width: 0%; transition: width 0.4s ease; }
+
+        /* Multi-Role Adaptive Buttons classes configuration */
+        .btn-action { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; background: #2563eb; color: #ffffff; font-size: 0.85rem; font-weight: 600; padding: 0.55rem 1.1rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s; }
+        .btn-action:hover { background: #1d4ed8; }
+        .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: #475569; }
+        .btn-outline:hover { background: #f8fafc; }
+
+        /* Badge Asset Classes Utilities */
+        .badge { display: inline-flex; align-items: center; padding: 0.2rem 0.5rem; border-radius: 40px; font-size: 0.725rem; font-weight: 600; }
+        .badge-primary { background: #eff6ff; color: #2563eb; }
+        .badge-success { background: #f0fdf4; color: #22c55e; }
+        .badge-warning { background: #fffbeb; color: #d97706; }
+        .badge-danger { background: #fef2f2; color: #ef4444; }
+
+        /* Skill Roadmap Node Trees Blocks layout */
+        .roadmap-tree { display: flex; flex-direction: column; gap: 1rem; position: relative; padding-left: 1rem; }
+        .roadmap-node { position: relative; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
+        .roadmap-node::before { content: ''; position: absolute; left: -17px; top: 50%; width: 10px; height: 10px; background: #2563eb; border-radius: 50%; }
+
+        /* System notification boxes configuration styling */
+        .live-ai-box { background: linear-gradient(135deg, #f8fafc, #eff6ff); border: 1px solid #bfdbfe; border-radius: 10px; padding: 1rem; margin-top: 0.75rem; font-size: 0.875rem; color: #1e3a8a; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 2000; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-box { background: #ffffff; padding: 2rem; border-radius: 12px; width: 100%; max-width: 440px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="sidebar-brand">EDUMITE SYSTEMS</div>
+        <div class="nav-item active" data-tab="courses"><span>Course Frameworks</span><span class="nav-badge" id="sidebar-badge-courses">2</span></div>
+        <div class="nav-item" data-tab="analytics"><span>Core Performance Data</span><span class="nav-badge">Live</span></div>
+        <div class="nav-item" data-tab="career"><span>Career OS & Proof Tree</span><span class="nav-badge">Sync</span></div>
+    </nav>
+
+    <div class="role-selector-bar">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+            <i data-lucide="layers" style="color:#2563eb;"></i>
+            <span style="font-weight:700; font-size:0.95rem; color:#0f172a;">Active Terminal Space Role:</span>
+        </div>
+        <select id="global-role-switcher" style="width:220px; margin-bottom:0; padding:0.4rem 0.6rem; font-weight:600; border-color:#2563eb; color:#2563eb;">
+            <option value="student">🎓 Student Workspace Suite</option>
+            <option value="teacher">👨‍🏫 Teacher Portal Console</option>
+            <option value="admin">🛠️ Central Administrator Suite</option>
+        </select>
+    </div>
+
+    <div class="main-container">
+
+        <div id="panel-student" class="role-panel active-panel">
+            
+            <div class="grid-3" style="grid-template-columns: 1.5fr 1fr 1fr; margin-bottom: 2.5rem;">
+                <div class="dashboard-card" style="background:linear-gradient(135deg, #2563eb, #1d4ed8); color:white;">
+                    <div style="display:flex; justify-content:between; align-items:center; justify-content:space-between;">
+                        <div>
+                            <p style="font-size:0.8rem; font-weight:600; opacity:0.85;">CURRENT EXPERIENCE LAYER</p>
+                            <h3 style="font-size:1.5rem; font-weight:800; margin-top:0.25rem;" id="st-level-lbl">Level 4 Scholar</h3>
+                        </div>
+                        <i data-lucide="award" size="32"></i>
+                    </div>
+                    <div class="progress-bar-track" style="background:rgba(255,255,255,0.25); margin-top:1rem;">
+                        <div class="progress-bar-fill" id="st-xp-bar" style="background:#ffffff; width:65%;"></div>
+                    </div>
+                    <p style="font-size:0.75rem; margin-top:0.35rem; text-align:right;" id="st-xp-lbl">2,450 / 3,000 XP accrued</p>
+                </div>
+                <div class="dashboard-card" style="display:flex; align-items:center; gap:1rem;">
+                    <div style="width:44px; height:44px; border-radius:50%; background:#fef2f2; color:#ef4444; display:flex; align-items:center; justify-content:center;"><i data-lucide="flame"></i></div>
+                    <div><span style="font-size:0.8rem; color:#64748b; font-weight:600;">DAILY STREAK INDEX</span><h3 style="font-size:1.35rem; font-weight:700;" id="st-streak-lbl">12 Active Days</h3></div>
+                </div>
+                <div class="dashboard-card" style="display:flex; align-items:center; gap:1rem;">
+                    <div style="width:44px; height:44px; border-radius:50%; background:#f0fdf4; color:#22c55e; display:flex; align-items:center; justify-content:center;"><i data-lucide="shield"></i></div>
+                    <div><span style="font-size:0.8rem; color:#64748b; font-weight:600;">OFFLINE SYSTEM CACHE</span><h3 style="font-size:1rem; font-weight:700; color:#22c55e;">Synced Ready (Indexed)</h3></div>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <div class="grid-3" style="grid-template-columns: 2fr 1fr;">
+                    
+                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                        <div class="dashboard-card">
+                            <div class="card-title"><i data-lucide="book-open"></i> Course Subject Modules & Knowledge Repositories</div>
+                            <div class="table-container">
+                                <table>
+                                    <thead><tr><th>Topic Area Title Scope</th><th>Modules Enrolled</th><th>Telemetry Density</th></tr></thead>
+                                    <tbody id="student-courses-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" style="border-left:4px solid #2563eb;">
+                            <div class="card-title"><i data-lucide="cpu" style="color:#2563eb;"></i> Integrated Context-Grounded AI Tutor Instance</div>
+                            <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Ask natural language verification questions locked directly against curriculum blueprints.</p>
+                            <div style="display:flex; gap:0.5rem;">
+                                <input type="text" id="ai-query-input" placeholder="e.g., Explain relational algebra rules or normalization objectives..." style="margin-bottom:0;">
+                                <button class="btn-action" id="ai-query-trigger-btn">Query Engine</button>
+                            </div>
+                            <div class="live-ai-box" id="ai-tutor-output-frame">Awaiting target system instruction data logs tokens...</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                        <div class="dashboard-card">
+                            <div class="card-title"><i data-lucide="file-text"></i> Document Vault & Notes Management</div>
+                            <div style="background:#f8fafc; border:2px dashed #cbd5e1; padding:1rem; border-radius:8px; text-align:center; margin-bottom:1rem; cursor:pointer;" id="dropzone-pdf">
+                                <i data-lucide="upload-cloud" style="color:#64748b; margin-bottom:0.25rem;"></i>
+                                <p style="font-size:0.8rem; font-weight:600; color:#475569;">Ingest Syllabus / Study PDF</p>
+                                <input type="file" id="hidden-file-input" style="display:none;" accept=".pdf">
+                            </div>
+                            <div id="notes-list-stack" style="display:flex; flex-direction:column; gap:0.5rem; max-height:220px; overflow-y:auto; padding-right:0.25rem;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <div class="grid-3" style="grid-template-columns: 1fr 1.5fr;">
+                    <div class="dashboard-card">
+                        <div class="card-title"><i data-lucide="help-circle"></i> Adaptive Testing Portal</div>
+                        <p style="font-size:0.825rem; color:#64748b; margin-bottom:1rem;">Create automated dynamic evaluation blocks directly compiled out from validated workspace notes.</p>
+                        <button class="btn-action style-secondary btn-outline" style="width:100%; margin-bottom:0.5rem;" id="action-trigger-quizgen"><i data-lucide="zap"></i> Auto-Generate Quiz</button>
+                        <div id="quiz-stack-container" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem;"></div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-title"><i data-lucide="git-branch"></i> Gamified Skill Tree Core Roadmap Framework</div>
+                        <div class="roadmap-tree">
+                            <div class="roadmap-node">
+                                <div style="display:flex; justify-content:space-between; align-items:center;"><strong>Database Ingestion Vectors</strong><span class="badge badge-success">Completed Logged</span></div>
+                                <p style="font-size:0.75rem; color:#64748b;">Grounded core structural paradigms across multi-relational database normalization frameworks.</p>
+                            </div>
+                            <div class="roadmap-node" style="opacity:0.85;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;"><strong>Distributed Network Topologies</strong><span class="badge badge-primary">Active Run Progress</span></div>
+                                <p style="font-size:0.75rem; color:#64748b;">Processing transactional orchestration across distributed cluster compute structures.</p>
+                                <div class="progress-bar-track"><div class="progress-bar-fill" style="width:40%; background:#2563eb;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-block" style="background:#ffffff; border:1px solid #e2e8f0; padding:2rem; border-radius:14px;">
+                <div class="section-header" style="border-bottom:1px solid #f1f5f9; padding-bottom:0.75rem; margin-bottom:1rem;">
+                    <div><h3><i data-lucide="briefcase" style="color:#2563eb;"></i> Cryptographic Portfolio Builder & Career Recommendations</h3><p style="color:#64748b; font-size:0.85rem;">Securing project deliverables using immutable ledger blocks.</p></div>
+                </div>
+                <div class="split-grid" style="grid-template-columns: 1.5fr 1.5fr;">
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Verified Candidate Profile</th><th>Discipline Competence</th><th>Ledger Signature Hash</th></tr></thead>
+                            <tbody id="career-ledger-tbody-student"></tbody>
+                        </table>
+                    </div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:1.25rem;">
+                        <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;"><i data-lucide="sparkles" style="color:#2563eb;"></i> Career Ingestion Recommendation Match Summary</h4>
+                        <div id="st-recommendation-box" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="panel-teacher" class="role-panel">
+            <div class="section-block">
+                <div class="section-header">
+                    <div><h1>Teacher Management Dashboard Terminal</h1><p class="subtitle">Cohort insight tracking systems, automated reporting configurations, and statistical clustering maps.</p></div>
+                    <button class="btn-action" id="trigger-report-generation-btn"><i data-lucide="printer"></i> Export Automated Performance Report</button>
+                </div>
+
+                <div class="grid-3" style="grid-template-columns: 1.8fr 1.2fr;">
+                    
+                    <div class="dashboard-card">
+                        <div class="card-title"><i data-lucide="users"></i> Active Roster Tracking & Cohort Distribution Scores</div>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Student Track Profile</th><th>Academic Score Grade</th><th>Engagement telemetry</th><th>Statistical Clustering Risk Bracket</th></tr></thead>
+                                <tbody id="teacher-roster-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                        <div class="dashboard-card">
+                            <div class="card-title"><i data-lucide="pie-chart"></i> Performance Grouping Clusters (K-Means Automated Fallback)</div>
+                            <div id="teacher-groupings-container" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+                        </div>
+
+                        <div class="dashboard-card" style="border-left:4px solid #ef4444;">
+                            <div class="card-title" style="color:#ef4444;"><i data-lucide="alert-triangle"></i> AI Detected Weak Topic Vectors</div>
+                            <p style="font-size:0.8rem; color:#64748b; margin-bottom:0.75rem;">Algorithmic indexing identified critical data mapping comprehension gaps across these specific tracks:</p>
+                            <div style="display:flex; flex-wrap:wrap; gap:0.35rem;" id="teacher-weak-topics-box"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="panel-admin" class="role-panel">
+            <div class="section-block">
+                <h1>Central Systems Administrative Control Plane</h1>
+                <p class="subtitle">Platform deployment verification rules, user provisioning, and enterprise pipeline connectivity hooks.</p>
+
+                <div class="grid-3">
+                    <div class="dashboard-card">
+                        <div class="card-title"><i data-lucide="shield-alert"></i> Global Identity & User Management Access</div>
+                        <div id="admin-users-list" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-title"><i data-lucide="sliders"></i> Global Platform System Orchestrations</div>
+                        <p style="font-size:0.825rem; color:#64748b; margin-bottom:1rem;">Manage active synchronization pipelines link bridges running across system endpoints infrastructure layers.</p>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <button class="btn-action btn-outline" style="justify-content:flex-start;" onclick="alert('Triggered global database memory defragment sequence...')"><i data-lucide="refresh-cw"></i> Defragment Context Storage</button>
+                            <button class="btn-action btn-outline" style="justify-content:flex-start;" onclick="alert('Flushing temporary offline network fallback assets data cache...')"><i data-lucide="trash-2"></i> Flush Offline Local Sync Cache</button>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-title"><i data-lucide="link"></i> Connected Recruitment Enterprise Sync Systems</div>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding:0.5rem; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0;">
+                                <span>Greenhouse ATS Endpoint</span><span class="badge badge-success">Live Connected</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding:0.5rem; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0;">
+                                <span>LinkedIn Talent Core API</span><span class="badge badge-success">Live Connected</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="quizgen-modal">
+        <div class="modal-box">
+            <h3 style="margin-bottom:1rem;">Generate AI Grounded Quiz Blueprint</h3>
+            <div class="form-group">
+                <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:0.25rem;">Evaluation Target Title Name</label>
+                <input type="text" id="modal-quiz-title-input" placeholder="e.g., Dynamic Algebra Challenge Drill">
+            </div>
+            <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.5rem;">
+                <button class="btn-action btn-outline" id="quizgen-modal-close-btn">Cancel</button>
+                <button class="btn-action" id="quizgen-modal-submit-btn">Compile Exam Node</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // --- WORKSPACE ROLE SPACE SWITCHER ARCHITECTURE CONTROLLER ---
+            const switcher = document.getElementById('global-role-switcher');
+            const panels = {
+                student: document.getElementById('panel-student'),
+                teacher: document.getElementById('panel-teacher'),
+                admin: document.getElementById('panel-admin')
+            };
+
+            switcher.addEventListener('change', function() {
+                Object.keys(panels).forEach(key => {
+                    panels[key].classList.remove('active-panel');
+                });
+                if(panels[this.value]) {
+                    panels[this.value].classList.add('active-panel');
+                    bootstrapActiveDataSequences();
+                }
+            });
+
+            /* =================================================================
+               CORE INGESTION TRANS-PIPELINE BACKEND NETWORK CONTROLLER CALLS
+               ================================================================= */
+            async function bootstrapActiveDataSequences() {
+                // Fetch student curriculum course subject nodes layout items map
+                try {
+                    const courseRes = await fetch('/api/education/courses');
+                    const courseData = await courseRes.json();
+                    const courseTbody = document.getElementById('student-courses-tbody');
+                    courseTbody.innerHTML = '';
+                    
+                    courseData.courses.forEach(c => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td><strong style="color:#0f172a;">${c.title}</strong></td><td><span class="badge badge-primary">${c.modules} Study Modules</span></td><td><span class="badge badge-success">Telemetry Engaged</span></td>`;
+                        courseTbody.appendChild(tr);
+                    });
+                    document.getElementById('sidebar-badge-courses').textContent = courseData.courses.length;
+
+                    // Pull current note documents inventory
+                    const notesRes = await fetch('/api/education/notes');
+                    const notesData = await notesRes.json();
+                    const notesStack = document.getElementById('notes-list-stack');
+                    notesStack.innerHTML = '';
+                    
+                    notesData.notes.forEach(n => {
+                        const div = document.createElement('div');
+                        div.style = "background:#f8fafc; border:1px solid #e2e8f0; padding:0.75rem; border-radius:8px; font-size:0.85rem;";
+                        div.innerHTML = `
+                            <div style="display:flex; justify-content:space-between; align-items:center;"><strong>${n.title}</strong><button class="btn-action btn-outline trigger-summarize-btn" data-id="${n.id}" style="padding:0.15rem 0.4rem; font-size:0.7rem;">AI Recap</button></div>
+                            <p style="font-size:0.75rem; color:#64748b; margin-top:0.25rem;">${n.summary}</p>
+                        `;
+                        notesStack.appendChild(div);
+                    });
+
+                    notesStack.querySelectorAll('.trigger-summarize-btn').forEach(btn => {
+                        btn.addEventListener('click', async function() {
+                            const nid = this.getAttribute('data-id');
+                            const sumRes = await fetch('/api/ai/summarize-note', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({note_id:nid}) });
+                            if(sumRes.ok) bootstrapActiveDataSequences();
+                        });
+                    });
+
+                    // Fetch active adaptive examinations quizzes frames
+                    const quizRes = await fetch('/api/education/quizzes');
+                    const quizData = await quizRes.json();
+                    const quizStack = document.getElementById('quiz-stack-container');
+                    quizStack.innerHTML = '';
+                    
+                    quizData.quizzes.forEach(q => {
+                        const div = document.createElement('div');
+                        div.style = "padding:0.65rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:0.825rem;";
+                        div.innerHTML = `<span><i data-lucide="help-circle" style="display:inline; vertical-align:middle;" size="14"></i> ${q.title}</span><button class="btn-action" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="alert('Adaptive Testing Core Engine Instruction: Loading question matrix sequence...')">Launch</button>`;
+                        quizStack.appendChild(div);
+                    });
+
+                    // Load Career OS blockchain verification ledgers summary items
+                    const careerRes = await fetch('/api/career/dashboard');
+                    const careerData = await careerRes.json();
+                    const careerTbody = document.getElementById('career-ledger-tbody-student');
+                    careerTbody.innerHTML = '';
+                    
+                    careerData.ledger.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td><strong>${item.student}</strong></td><td>${item.skill}</td><td><span class="badge badge-hash" style="font-family:monospace; background:#f1f5f9; border:1px solid #cbd5e1;">${item.hash}</span></td>`;
+                        careerTbody.appendChild(tr);
+                    });
+
+                    const recBox = document.getElementById('st-recommendation-box');
+                    recBox.innerHTML = '';
+                    careerData.recommendations.forEach(r => {
+                        const d = document.createElement('div');
+                        d.innerHTML = `<span class="badge badge-primary" style="margin-bottom:0.15rem;">Discipline: ${r.skill}</span><p style="font-size:0.75rem; color:#475569;">Match verification context trigger: ${r.reason}</p>`;
+                        recBox.appendChild(d);
+                    });
+
+                    // Ingest and render configuration sets for Teacher Portal Dashboard Analytics
+                    const teacherRes = await fetch('/api/teacher/analytics');
+                    const teacherData = await teacherRes.json();
+                    
+                    const tRosterTbody = document.getElementById('teacher-roster-tbody');
+                    tRosterTbody.innerHTML = '';
+                    teacherData.roster.forEach(s => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td><strong>${s.name}</strong></td><td>${s.grade}% Passing Rate</td><td>${s.engagement}% Engagement</td><td><span class="badge ${s.cluster === 'Critical Attention' ? 'badge-danger' : 'badge-success'}">${s.cluster}</span></td>`;
+                        tRosterTbody.appendChild(tr);
+                    });
+
+                    const groupsCont = document.getElementById('teacher-groupings-container');
+                    groupsCont.innerHTML = '';
+                    Object.keys(teacherData.groupings).forEach(gName => {
+                        const members = teacherData.groupings[gName];
+                        const div = document.createElement('div');
+                        div.style = "background:#f8fafc; border:1px solid #e2e8f0; padding:0.5rem; border-radius:6px; font-size:0.825rem;";
+                        div.innerHTML = `<strong>${gName}</strong><p style="font-size:0.75rem; color:#64748b; margin-top:0.15rem;">Enrolled instances: ${members.join(', ') || 'None matched'}</p>`;
+                        groupsCont.appendChild(div);
+                    });
+
+                    const weakBox = document.getElementById('teacher-weak-topics-box');
+                    weakBox.innerHTML = '';
+                    teacherData.roster.forEach(s => {
+                        s.weak_topics.forEach(topic => {
+                            const span = document.createElement('span');
+                            span.className = "badge badge-danger";
+                            span.style = "margin-right:0.25rem; margin-bottom:0.25rem;";
+                            span.textContent = `${topic} (${s.name})`;
+                            weakBox.appendChild(span);
+                        });
+                    });
+
+                    // Setup user configuration arrays for central administration panels
+                    const adminUserStack = document.getElementById('admin-users-list');
+                    adminUserStack.innerHTML = '';
+                    ['Alex Mercer (Student)', 'Baird Cooper (Student)', 'Chloe Frazer (Student)', 'Instructor Deployment Node (Teacher)'].forEach(u => {
+                        const div = document.createElement('div');
+                        div.style = "padding:0.5rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;";
+                        div.innerHTML = `<span>${u}</span><button class="btn-action btn-outline" style="padding:0.15rem 0.35rem; font-size:0.65rem;" onclick="alert('Identity Vault access restriction: Core control actions locked under superuser protocol authorization codes.')">Edit Scope</button>`;
+                        adminUserStack.appendChild(div);
+                    });
+
+                    lucide.createIcons();
+
+                } catch(e) { console.error("Global system initialization stream configuration interrupt anomaly context:", e); }
+            }
+
+            /* =================================================================
+               INTERACTIVE ARTIFICIAL INTELLIGENCE GROUNDED TUTOR CLIENT DRIVERS
+               ================================================================= */
+            const aiInput = document.getElementById('ai-query-input');
+            const aiTriggerBtn = document.getElementById('ai-query-trigger-btn');
+            const aiOutputFrame = document.getElementById('ai-tutor-output-frame');
+
+            aiTriggerBtn.addEventListener('click', async function() {
+                const query = aiInput.value.trim();
+                if(!query) return;
+                aiOutputFrame.textContent = "AI Context Grounding Engine: Navigating virtual vectors matrix lines...";
+                
+                const response = await fetch('/api/ai/ask', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ prompt: query, context_source: 'curriculum' })
+                });
+                if(response.ok) {
+                    const parsed = await response.json();
+                    aiOutputFrame.textContent = parsed.reply;
+                    
+                    // Award XP to student profile on successful curriculum system interaction
+                    await fetch('/api/gamification/award-xp', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ student_id: 'st_01', amount: 150 })
+                    });
+                    bootstrapActiveDataSequences();
+                }
+            });
+
+            // --- QUIZ OVERLAY GENERATION TRIGGER CONTROLLER ACTIONS ---
+            const quizgenModal = document.getElementById('quizgen-modal');
+            document.getElementById('action-trigger-quizgen').addEventListener('click', () => { quizgenModal.classList.add('active'); });
+            document.getElementById('quizgen-modal-close-btn').addEventListener('click', () => { quizgenModal.classList.remove('active'); });
+            
+            document.getElementById('quizgen-modal-submit-btn').addEventListener('click', async () => {
+                const quizTitle = document.getElementById('modal-quiz-title-input').value.trim();
+                if(!quizTitle) return alert('Enter a target challenge validation title name descriptor.');
+                
+                const response = await fetch('/api/ai/generate-quiz', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ source_id: 'nt_01', title: quizTitle })
+                });
+                if(response.ok) {
+                    quizgenModal.classList.remove('active');
+                    bootstrapActiveDataSequences();
+                }
+            });
+
+            // --- DOCUMENT VAULT PDF DRAG AND DROP CAPTURE ENGINE ---
+            const dropzone = document.getElementById('dropzone-pdf');
+            const hiddenInput = document.getElementById('hidden-file-input');
+            
+            dropzone.addEventListener('click', () => hiddenInput.click());
+            hiddenInput.addEventListener('change', async function() {
+                if(!this.files.length) return;
+                const formData = new FormData();
+                formData.append('file', this.files[0]);
+                
+                dropzone.querySelector('p').textContent = "Processing PDF Vectors...";
+                const res = await fetch('/api/education/upload-pdf', { method: 'POST', body: formData });
+                if(res.ok) {
+                    dropzone.querySelector('p').textContent = "Ingest Syllabus / Study PDF";
+                    alert('PDF successfully ingested, tokens mapped, and schema files compiled inside offline fallback state.');
+                    bootstrapActiveDataSequences();
+                }
+            });
+
+            // Automated Automated Reporting Reporting Generator Engine Click Hook
+            document.getElementById('trigger-report-generation-btn').addEventListener('click', () => {
+                alert('Automated Report Engine Operation: Compiled cross-cohort passing grades. Generated structural system matrix tracking metrics index file: "EDUMITE_COHORT_SUMMARY_2026.pdf"');
+            });
+
+            // Bootstrap application ecosystem core runtime views on launch execution
+            bootstrapActiveDataSequences();
+        });
+    </script>
+</body>
+</html>
